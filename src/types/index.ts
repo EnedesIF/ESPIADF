@@ -10,6 +10,7 @@ export type RoleId =
   | 'mapeador' | 'pesquisador' | 'articulador' | 'relator';
 
 export interface AvatarConfig {
+  characterGender?: 'menino' | 'menina';
   cartoonStyle?: {hair: number; outfit: number; trousers: number; accessory: 'nenhum'|'oculos'|'bone'|'fone'|'bandana'; accessories?: import('@/data/avatarCatalog').GearSelection};
   cartoonLook?: number;             // preset ilustrado, compartilhado entre estúdio e cidade
   build: 'A' | 'B' | 'C';          // apresentação corporal (não é rótulo de gênero)

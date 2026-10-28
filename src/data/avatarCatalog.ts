@@ -31,3 +31,6 @@ export function gearSelection(style:{accessory?:string;accessories?:GearSelectio
  if(style?.accessories)return {...style.accessories};const selected:GearSelection={};for(const [slot,group] of Object.entries(GEAR_SLOTS))if(group.options.some(([id])=>id===style?.accessory))selected[slot as GearSlot]=style!.accessory as AvatarGear;return selected;
 }
 export function setGear(style:{accessory:string;accessories?:GearSelection},slot:GearSlot,value:AvatarGear){if(!GEAR_SLOTS[slot].options.some(([id])=>id===value))throw Error('Acessório incompatível com esta posição.');style.accessories={...gearSelection(style),[slot]:value};style.accessory='nenhum'}
+
+/** Authored cast groups; the participant explicitly chooses their character. */
+export const AVATAR_GENDERS: readonly ('menino'|'menina')[] = ['menino','menina','menino','menina','menino','menino','menina','menino','menina','menino','menina','menino','menina','menino','menina','menino','menina','menino'];

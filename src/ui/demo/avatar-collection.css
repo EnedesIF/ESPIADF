@@ -30,3 +30,10 @@
 .avatar-extended .rig-right .rig-thigh{clip-path:polygon(50% 58%,60% 58%,60% 65%,68% 81%,50% 81%)}
 .avatar-extended .rear-left{clip-path:polygon(43% 58%,50% 58%,50% 100%,27% 100%,36% 67%,43% 64%)}
 .avatar-extended .rear-right{clip-path:polygon(50% 58%,60% 58%,60% 64%,70% 70%,73% 100%,50% 100%)}
+
+/* Match the stretched atlas coordinates in every portrait and city actor. */
+.avatar-gear svg{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none}
+.studio-gender .chip{min-width:110px;min-height:44px}
+.studio-gender .chip[aria-pressed=true]{background:#27dfa3;color:#083b38;border-color:#a8ffdb}
+/* A hat and headphones occupy the same crown: keep headphones behind the hat. */
+.avatar-gear.gear-slot-ears{z-index:7}
