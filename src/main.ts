@@ -5,6 +5,7 @@ import './styles/story-demo.css';
 import './styles/internal-ui.css';
 import './styles/cartoon-ui.css';
 import { App } from './ui/App';
+import './styles/mobile.css';
 
 const app = new App(document.getElementById('stage')!, document.getElementById('ui')!);
 audio.mount();

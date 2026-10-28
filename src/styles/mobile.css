@@ -1,0 +1,108 @@
+/* Shared phone/tablet layout: four campaigns, every case and all nine stages. */
+.mobile-game-toolbar{display:flex;gap:6px;align-items:center;min-width:0;flex:1;justify-content:flex-end}
+.mobile-evidence-picker{display:grid;gap:10px;margin:12px 0;min-width:0}
+.mobile-evidence-picker label{display:grid;gap:8px}
+.mobile-evidence-picker input[type=file]{max-width:100%;width:100%;box-sizing:border-box}
+.mobile-evidence-picker button{justify-self:start}
+@media(max-width:1024px),(pointer:coarse){
+ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+ button,a{touch-action:manipulation}
+ .screen input:not([type=checkbox]):not([type=radio]),.screen select,.screen textarea,.pilot-dialog input,.pilot-dialog select,.pilot-dialog textarea{font-size:16px!important}
+ .screen,.screen *,.pilot-dialog *{min-width:0;overflow-wrap:anywhere}
+ .screen{max-width:100%;box-sizing:border-box}
+ .screen .btn,.screen .chip,.screen .tabs button,.screen summary,.pilot-dialog button,.pilot-dialog a{min-height:44px}
+ .screen input[type=checkbox],.screen input[type=radio]{min-width:22px;min-height:22px}
+ .screen table,.pilot-dialog table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .screen table th,.screen table td,.pilot-dialog table th,.pilot-dialog table td{min-width:100px}
+ .screen .grid2,.screen .grid3,.screen .cred,.screen .hub-grid,.screen .dash-grid,.monitor-workspace,.relay-dashboard .relay-team-grid{grid-template-columns:minmax(0,1fr)}
+ .screen .member{grid-template-columns:32px minmax(0,1fr);padding:14px;border:1px solid var(--line);border-radius:12px}
+ .screen .member>*{grid-column:2}
+ .screen .member>:first-child{grid-column:1;grid-row:1/3}
+ .screen .member input,.screen .member select{width:100%;box-sizing:border-box}
+ .screen .rolegrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .screen.dash,.real-central{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+ .modal-back{position:fixed;padding:10px;padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(10px,env(safe-area-inset-bottom))}
+ .panel.modal{width:100%;max-width:100%;max-height:calc(100dvh - 24px);box-sizing:border-box;overscroll-behavior:contain}
+ .park-challenge{height:var(--mobile-visible-height,100dvh);bottom:auto;--mobile-hud-height:34px;--mobile-footer-height:66px;padding:0;overflow:hidden}
+ .park-challenge>header{position:absolute;left:0;right:0;top:0;inset-inline:0;height:auto;min-height:0;display:flex;flex-wrap:wrap;gap:4px;padding:calc(5px + env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) 5px max(8px,env(safe-area-inset-left));box-sizing:border-box;z-index:2000;background:#062c36}
+ .park-challenge>header>div{flex:1 1 100%;min-width:0;display:flex;gap:9px;align-items:center;justify-content:space-between;font-size:13px}
+ .park-challenge>header>div small{font-size:11px;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .park-challenge>header>div b{font-size:13px;line-height:1.2}
+ .park-challenge .mobile-game-toolbar{flex:1 1 100%;justify-content:flex-start;overflow-x:auto;overscroll-behavior-x:contain;gap:6px;padding:2px 0;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+ .park-challenge .mobile-game-toolbar>button{flex:0 0 auto;min-height:44px;padding:8px 12px;font-size:12px;white-space:nowrap}
+ .park-challenge .mobile-game-toolbar>.pilot-forum-alert{min-height:44px;font-size:12px;max-width:260px;white-space:normal}
+ .park-challenge .mobile-game-toolbar>.pilot-forum-alert small{display:none}
+ .park-challenge>.pilot-relay-hud{position:absolute;top:var(--game-header-height,98px);left:0;right:0;width:auto;max-width:none;height:var(--mobile-hud-height);box-sizing:border-box;display:flex;align-items:center;padding:4px 12px;white-space:nowrap;overflow-x:auto;border-radius:0;font-size:12px;background:#0b3b43;z-index:1600}
+ .park-challenge>.pilot-journey,.park-challenge>.pilot-objective{display:none}
+ .park-challenge.connected-pilot>.pilot-viewport{position:absolute;top:calc(var(--game-header-height,98px) + var(--mobile-hud-height));left:0;right:0;bottom:calc(var(--mobile-footer-height) + env(safe-area-inset-bottom));display:block;overflow:hidden;container-type:size}
+ .park-challenge .pilot-world{position:absolute;left:0;top:0;max-width:none;flex-shrink:0;border-radius:0;touch-action:manipulation}
+ .park-challenge>footer{height:calc(var(--mobile-footer-height) + env(safe-area-inset-bottom));box-sizing:border-box;bottom:0;padding:4px max(8px,env(safe-area-inset-right)) calc(4px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));gap:5px;display:flex;flex-wrap:wrap;align-content:center;background:#062c36}
+ .park-challenge>footer>span{flex:1 1 100%;font-size:11px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+ .park-challenge>footer>button{min-height:44px;font-size:12px;line-height:1.2;padding:6px 10px;max-width:100%}
+ .park-challenge>footer>.pilot-interact{flex:1}
+ .park-challenge>.pilot-pad{left:max(8px,env(safe-area-inset-left));bottom:calc(var(--mobile-footer-height) + env(safe-area-inset-bottom) + 8px);top:auto;padding:5px;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(4,44px);gap:3px;box-sizing:border-box;touch-action:none;z-index:1800;background:#073742e8;box-shadow:0 3px 14px #001b2f55}
+ .park-challenge>.pilot-pad>button{min-width:44px;min-height:44px;padding:3px;font-size:12px;line-height:1.2;touch-action:none;grid-column:auto;grid-row:auto}
+ .park-challenge>.pilot-pad>button:nth-child(1){grid-column:2;grid-row:1}
+ .park-challenge>.pilot-pad>button:nth-child(2){grid-column:1;grid-row:2}
+ .park-challenge>.pilot-pad>button:nth-child(3){grid-column:2;grid-row:2}
+ .park-challenge>.pilot-pad>button:nth-child(4){grid-column:3;grid-row:2}
+ .park-challenge>.pilot-pad>button:nth-child(5){grid-column:2;grid-row:3}
+ .park-challenge>.pilot-pad>button:nth-child(6){grid-column:1!important;grid-row:3;font-size:11px}
+ .park-challenge>.pilot-pad>button:nth-child(7){grid-column:3!important;grid-row:3;font-size:11px}
+ .park-challenge>.pilot-pad>button:nth-child(8){grid-column:1/4!important;grid-row:4;font-size:11px}
+ .park-challenge>.pilot-pad>.pilot-pad-drag{grid-column:1!important;grid-row:1;font-size:10px!important;cursor:grab}
+ .park-challenge>.pilot-pad>.pilot-pad-side{grid-column:3!important;grid-row:1;font-size:10px!important}
+ .park-challenge>.pilot-dialog,.park-challenge>.pilot-dialog.park-team-panel,.park-challenge>.pilot-dialog.park-map-panel{position:absolute;inset:calc(8px + env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));width:auto;max-width:none;height:auto;max-height:none;box-sizing:border-box;padding:18px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;z-index:4000;border-radius:14px;background:#eefbf3;color:#153e40}
+ .park-challenge>.pilot-dialog h2{font-size:21px;line-height:1.25;padding-right:4px}
+ .park-challenge>.pilot-dialog p,.park-challenge>.pilot-dialog label{font-size:15px;line-height:1.55}
+ .park-challenge>.pilot-dialog textarea,.park-challenge>.pilot-dialog input,.park-challenge>.pilot-dialog select{max-width:100%;width:100%;box-sizing:border-box;min-height:44px}
+ .park-challenge>.pilot-dialog button,.park-challenge>.pilot-dialog a{font-size:14px;min-height:44px;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere}
+ .park-challenge>.pilot-dialog>button:last-child{position:sticky;bottom:-18px;margin:16px -2px -2px;width:100%;background:#125449;color:white;box-shadow:0 -5px 12px #eefbf3}
+ .park-challenge:has(>.pilot-dialog:not([hidden]))>.pilot-pad,.park-challenge:has(>.pilot-dialog:not([hidden]))>header,.park-challenge:has(>.pilot-dialog:not([hidden]))>footer{visibility:hidden}
+ .park-challenge .clue-map{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .park-challenge .pilot-portal{min-height:44px;min-width:44px;padding:6px 10px!important;font-size:12px!important;max-width:160px}
+ .park-challenge .pilot-clue,.park-challenge .relay-clue{min-height:44px;min-width:44px}
+ .park-challenge .pilot-task-target{min-height:44px}
+ .park-challenge .pilot-burst{font-size:14px;max-width:80%;box-sizing:border-box}
+ .park-challenge .talking-portrait{max-width:100%}
+ .collection-studio .cartoon-member-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+ .collection-studio .cartoon-member-tabs .chip{flex:0 0 auto;min-height:48px}
+ .collection-studio .studio-preview-stage{max-width:260px}
+ .relay-tabs,.relay-filters{display:flex;flex-wrap:wrap;gap:8px}
+ .relay-tabs button,.relay-filters button{min-height:44px}
+ .relay-charts,.relay-detail .grid2,.monitor-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .relay-detail,.relay-dashboard,.monitor-detail,.monitor-workspace>*{min-width:0;max-width:100%;box-sizing:border-box}
+ .screen .tbl{display:block;overflow:auto;width:100%;max-width:100%}
+ .completed-demo .demo-complete-cast{flex-wrap:wrap}
+}
+@media(max-width:600px){
+ .screen .grid3,.screen .camps,.screen .mods,.screen .rolegrid,.screen .apps,.relay-charts,.monitor-kpis{grid-template-columns:minmax(0,1fr)}
+ .screen .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .screen .bigbar{grid-template-columns:90px minmax(0,1fr) 40px}
+ .screen .avatar-screen{grid-template-columns:minmax(0,1fr)}
+ .collection-studio .studio-layout{grid-template-columns:minmax(0,1fr)}
+ .collection-studio .cartoon-look-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .collection-studio .avatar-palette{display:flex;flex-wrap:wrap;gap:8px}
+ .collection-studio .avatar-palette legend{float:none;width:100%;margin-bottom:8px}
+ .collection-studio footer .btn{width:100%;white-space:normal}
+ .park-challenge .clue-map{grid-template-columns:minmax(0,1fr)}
+ .sound-dock{max-width:calc(100vw - 20px)}
+}
+@media(max-height:500px) and (orientation:landscape) and (max-width:1100px){
+ .park-challenge{--mobile-footer-height:52px;--mobile-hud-height:27px}
+ .park-challenge>header{padding-top:max(2px,env(safe-area-inset-top));gap:0}
+ .park-challenge>header>div{font-size:11px}
+ .park-challenge>header>div b{font-size:12px}
+ .park-challenge .mobile-game-toolbar{padding:0}
+ .park-challenge>footer{flex-wrap:nowrap}
+ .park-challenge>footer>span{flex:1 1 auto;white-space:normal;max-height:30px;font-size:11px}
+ .park-challenge>footer>button{flex:0 0 auto}
+ .park-challenge>.pilot-pad{bottom:calc(var(--mobile-footer-height) + env(safe-area-inset-bottom) + 4px)}
+ .park-challenge>.pilot-dialog{padding:14px 22px}
+ .park-challenge>.pilot-dialog>button:last-child{bottom:-14px}
+}
+@media(pointer:coarse){
+ .plaza-pollen,.cartoon-atmosphere{animation:none!important}
+ .plaza-pollen{display:none}
+}
+@media(prefers-reduced-motion:reduce){.park-challenge *{scroll-behavior:auto!important}}
