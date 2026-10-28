@@ -1,0 +1,72 @@
+import {relayRoute,routeActivities} from '@/data/relayChallenges';
+import {GDF_ROUTES} from '@/data/gdf/routes';
+import {challengeFor} from '@/data/challenges';
+import type {CampaignId,Team} from '@/types';
+import {registrationAssignments,type TeamRole} from '@/data/cityCooperation';
+import {delivery,submitTask,type TaskDelivery} from './taskValidation';
+import {validURL,learning,pendingGDFTopics} from './learning';
+export const PARK_PREFIX='park-challenge:v1:';
+export const PARK_ROLES:TeamRole[]=['escuta','campo','verificacao','dados','articulacao','participacao'];
+export const PARK_STEPS=['Escolher a rota','Examinar informações iniciais','Comparar perspectivas','Escolher fontes','Interpretar e verificar','Propor uma resposta','Preparar participação','Avaliar a resposta','Apresentar e realizar a prática'];
+export type ParkKind='route'|'agent'|'board'|'compare'|'source'|'verify'|'solution'|'channel'|'response'|'final';
+export interface ParkActivity{kind:ParkKind;step:number;role:TeamRole;place:'square'|'alameda'|'park'|'lab';target:[number,number];title:string;prompt:string;speaker?:'tech'|'caio';speech?:string}
+export const PARK_ACTIVITIES:ParkActivity[]=[
+ {kind:'route',step:1,role:'escuta',place:'square',target:[50,83],title:'Examinar o mapa da praça',prompt:'Escolha o percurso que a equipe quer investigar e explique por quê. Ida às 7h e volta às 19h.'},
+ {kind:'agent',step:2,role:'escuta',place:'park',target:[57,69],title:'Conversar com a agente',prompt:'O que a agente explicou? Qual problema a equipe precisa verificar?',speaker:'tech',speech:'Vocês pretendem passar às 7h e voltar às 19h? Antes de escolher o caminho, observem os horários de cada entrada. O quadro está aqui no parque. O que vocês precisam descobrir para saber se esse trajeto funciona?'},
+ {kind:'board',step:2,role:'campo',place:'park',target:[43,61],title:'Examinar o quadro de horários',prompt:'Qual entrada permite passar às 7h? Alguma permite voltar às 19h? Capture o quadro e interprete a evidência.'},
+ {kind:'compare',step:3,role:'verificacao',place:'square',target:[55,81],title:'Ouvir o morador na praça',prompt:'Compare o relato do morador, a fala da agente e o quadro. O relato comprova passagem às 19h? Explique.',speaker:'caio',speech:'Eu sempre atravesso por ali à tarde. Para mim, o caminho funciona muito bem. Mas nunca precisei voltar às 19h.'},
+ {kind:'source',step:4,role:'dados',place:'alameda',target:[65,77],title:'Consultar o Laboratório de Evidências',prompt:'Escolha uma fonte pertinente, justifique e registre uma hipótese sustentada pelas evidências.'},
+ {kind:'verify',step:5,role:'dados',place:'park',target:[57,69],title:'Verificar os limites com a agente',prompt:'O que podemos concluir no cenário? O que ainda precisa de confirmação em uma fonte atualizada?',speaker:'tech',speech:'Esses são os horários informados neste cenário fictício. Para planejar um deslocamento real, confiram a informação atualizada no canal responsável. Diferenciem o que observaram do que ainda precisam verificar.'},
+ {kind:'solution',step:6,role:'articulacao',place:'lab',target:[57,77],title:'Construir uma proposta no laboratório',prompt:'Proponha um encaminhamento para a ida às 7h e a volta às 19h. Justifique com evidências e indique quem fará cada ação.'},
+ {kind:'channel',step:7,role:'articulacao',place:'lab',target:[69,80],title:'Escolher a ferramenta de participação',prompt:'Justifique o canal escolhido e prepare a minuta ou a conclusão da consulta. Nenhum pedido será enviado automaticamente.'},
+ {kind:'response',step:8,role:'participacao',place:'lab',target:[45,81],title:'Ler a resposta no atendimento',prompt:'O que a resposta esclarece? O que continua pendente? A proposta precisa mudar?'},
+ {kind:'final',step:9,role:'participacao',place:'lab',target:[57,77],title:'Reunir a equipe e apresentar a prática',prompt:'Organize a conclusão com os seis participantes, a pesquisa real e a participação pertinente, com comprovantes e interpretação.'}
+];
+export interface ParkRecord{kind:ParkKind;memberId:string;memberName:string;at:number;fields:Record<string,string>}
+export interface ParkEvent{id:string;at:number;kind:string;label:string;memberId:string;place:string;step:number}
+export interface ParkState{events?:ParkEvent[];discoveredClues?:string[];routeId?:string;version:1;teamId:string;started:boolean;discussion:string;assignments:Record<string,string>;index:number;place:string;position:[number,number];visited:string[];clue:boolean;records:ParkRecord[];drafts:Record<string,Record<string,string>>;rewards:string[];finished:boolean}
+export const challengePrefix=(id='park')=>id==='park'?PARK_PREFIX:'relay-challenge:v1:'+relayRoute(id).id+':';
+const key=(id:string,routeId='park')=>challengePrefix(routeId)+id;
+export const stateRoute=(s:ParkState)=>relayRoute(s.routeId??'park');
+export const activitiesFor=(s:ParkState)=>routeActivities(stateRoute(s),PARK_ACTIVITIES);
+export function newParkState(team:Team,routeId='park'):ParkState{return {routeId:relayRoute(routeId).id,version:1,teamId:team.id,started:false,discussion:'',assignments:registrationAssignments(team.members),index:0,place:'square',position:[40,90],visited:['square'],clue:false,records:[],drafts:{},rewards:[],finished:false}}
+export function parkState(team:Team,routeId='park'):ParkState{try{const s=JSON.parse(localStorage.getItem(key(team.id,routeId))||'null');if(s?.version===1&&s.teamId===team.id&&Number.isInteger(s.index)&&s.index>=0&&s.index<PARK_ACTIVITIES.length&&Array.isArray(s.records)&&s.drafts&&Array.isArray(s.rewards))return {...s,routeId:relayRoute(routeId).id}}catch{}return newParkState(team,routeId)}
+export function savePark(s:ParkState){localStorage.setItem(key(s.teamId,s.routeId??'park'),JSON.stringify(s))}
+export const challengeLockKey=(teamId:string,campaign:CampaignId)=>'espia:challenge-case:v1:'+teamId+':'+campaign;
+export function activeChallengeCase(team:Team,campaign:CampaignId){const id=localStorage.getItem(challengeLockKey(team.id,campaign));const locked=GDF_ROUTES.find(r=>r.id===id&&r.campaign===campaign);if(locked)return locked;return GDF_ROUTES.filter(r=>r.campaign===campaign).map(r=>({route:r,state:parkState(team,r.id)})).filter(v=>v.state.started).sort((a,b)=>Number(b.state.finished)-Number(a.state.finished)||b.state.index-a.state.index)[0]?.route}
+export function lockParkRoles(team:Team,s:ParkState,assignments:Record<string,string>,discussion:string){if(s.started)throw Error('Os papéis deste desafio já estão bloqueados.');const active=activeChallengeCase(team,stateRoute(s).campaign);if(active&&active.id!==stateRoute(s).id)throw Error('Este desafio já foi iniciado no caso '+active.title+'. Continue o progresso da equipe.');if(team.members.length<6)throw Error('Cadastre pelo menos seis participantes.');if(discussion.trim().length<20)throw Error('Registre a decisão da equipe em pelo menos 20 caracteres.');const ids=PARK_ROLES.map(r=>assignments[r]);if(new Set(ids).size!==6||ids.some(id=>!team.members.some(m=>m.id===id)))throw Error('Escolha seis responsáveis diferentes, um por papel.');s.assignments={...assignments};s.discussion=discussion.trim();s.started=true;localStorage.setItem(challengeLockKey(team.id,stateRoute(s).campaign),stateRoute(s).id);savePark(s)}
+export const parkTaskKey=(step:number,routeId='park')=>challengePrefix(routeId)+'step:'+step;
+export const activityTaskKey=(s:ParkState)=>parkTaskKey(activitiesFor(s)[s.index].step,s.routeId)+(activitiesFor(s)[s.index].kind==='agent'?':agent':'');
+export const parkReview=(s:ParkState)=>delivery(s.teamId,stateRoute(s).campaign,activityTaskKey(s));
+export function parkScore(s:ParkState){let total=0,completed=0;for(let step=1;step<=9;step++){const t=delivery(s.teamId,stateRoute(s).campaign,parkTaskKey(step,s.routeId));if(t?.status!=='validated')continue;if(step===2){const agent=delivery(s.teamId,stateRoute(s).campaign,parkTaskKey(2,s.routeId)+':agent');if(agent?.status!=='validated')continue;total+=((t.score??0)+(agent.score??0))/2}else total+=t.score??0;completed++}return {total,completed}}
+export function parkForumPending(s:ParkState){return learning().suggestions.filter(t=>t.teamId==='gdf'&&t.status==='published'&&t.campaign===stateRoute(s).campaign&&(!t.routeId||t.routeId===(s.routeId??'park'))&&delivery(s.teamId,t.campaign,'forum:'+t.id)?.status!=='validated')}
+/** Match the forum visible to this team: general questions plus this case. */
+export function parkForumToAnswer(s:ParkState){return pendingGDFTopics(s.teamId).filter(topic=>!topic.routeId||topic.routeId===stateRoute(s).id)}
+export function parkCanAdvance(s:ParkState){const t=parkReview(s);return !!t&&t.status!=='student_adjust'&&(activitiesFor(s)[s.index].kind!=='final'||parkForumToAnswer(s).length===0)}
+const long=(fields:Record<string,string>,name:string,label:string)=>{if((fields[name]?.trim().length??0)<20||fields[name].length>6000)throw Error(label+': escreva de 20 a 6.000 caracteres.')};
+export function validateParkFields(a:ParkActivity,f:Record<string,string>,s:ParkState,team:Team){
+ long(f,'answer','Sua interpretação');
+ if(a.kind==='route'&&!(stateRoute(s).id==='park'?['parque','externo']:['principal','alternativa']).includes(f.route))throw Error('Escolha uma rota para investigar.');
+ if(a.kind==='agent'&&!s.clue)throw Error('Encontre primeiro a pista na alameda.');
+ if(a.kind==='board'){if(!f.evidenceId)throw Error('Capture o quadro ou anexe sua imagem.');if(!s.records.some(r=>r.kind==='agent'))throw Error('Registre a conversa com a agente.');}
+ if(a.kind==='source'){if(f.toolOpened!=='sim')throw Error('Abra a fonte indicada pelo GDF antes de registrar a análise.');if(f.source!=='oficial')throw Error('A ferramenta selecionada não responde à pergunta desta etapa. Compare as opções e escolha a fonte pertinente.');long(f,'hypothesis','Sua ideia antes da pesquisa');}
+ if(a.kind==='solution')long(f,'responsibilities','Responsáveis e ações');
+ if(a.kind==='channel'){if(!['consulta','lai','ouvidoria','servico'].includes(f.channel))throw Error('Escolha a ferramenta adequada.');long(f,'draft','Minuta ou conclusão da consulta');}
+ if(a.kind==='final'){
+  if(activitiesFor(s).slice(0,-1).some(a=>{const t=delivery(s.teamId,stateRoute(s).campaign,parkTaskKey(a.step,s.routeId)+(a.kind==='agent'?':agent':''));return !t||t.status==='student_adjust'}))throw Error('Envie as tarefas dos oito passos anteriores e corrija eventuais ajustes solicitados.');
+  if(!validURL(f.researchURL,true))throw Error('Informe um link HTTPS de uma fonte oficial para a pesquisa real.');
+  for(const date of [f.researchDate,f.participationDate]){if(!/^\d{4}-\d{2}-\d{2}$/.test(date??'')||!Number.isFinite(Date.parse(date))||Date.parse(date)>Date.now()+86400000)throw Error('Informe datas válidas para as duas entregas reais.');}
+  if(!f.researchEvidence||!f.participationEvidence)throw Error('Anexe um print ou foto para cada uma das duas entregas reais.');
+  long(f,'research','Interpretação da pesquisa real');long(f,'participation','Participação pertinente e resultado');
+  if(!['consulta','lai','ouvidoria','acao','servico'].includes(f.realChannel))throw Error('Identifique a participação real realizada.');
+  for(const m of team.members)long(f,'contribution:'+m.id,'Contribuição de '+m.name);
+  if(f.confirm!=='sim')throw Error('Confirme que as duas atividades foram realizadas fora da simulação.');
+ }
+}
+export function submitPark(team:Team,s:ParkState,fields:Record<string,string>,index=s.index){if(!Number.isInteger(index)||index<0||index>s.index)throw Error('Tarefa indisponível.');const context={...s,index},previous=parkReview(context);if(!s.started||(s.finished&&previous?.status!=='student_adjust'))throw Error('Desafio indisponível.');const a=activitiesFor(s)[index],member=team.members.find(m=>m.id===s.assignments[a.role]);if(!member)throw Error('Responsável não encontrado.');validateParkFields(a,fields,context,team);const d=parkReview(context);if(d&&d.status!=='student_adjust')throw Error('Aguarde a avaliação e a confirmação do GDF.');
+ const record:ParkRecord={kind:a.kind,memberId:member.id,memberName:member.name,at:Date.now(),fields:{...fields}};
+ let task:TaskDelivery|undefined;
+ task=submitTask(team,stateRoute(s).campaign,activityTaskKey(context),'Desafio '+challengeFor(stateRoute(s).campaign).number+' • '+stateRoute(s).title+' • Etapa '+a.step+'/9 • '+PARK_STEPS[a.step-1],member.id,JSON.stringify({tarefa:a.title,participante:member.name,respostas:fields,historico:[...s.records.filter(r=>r.kind!==a.kind),record],evidenceId:fields.evidenceId,evidenceIds:[fields.researchEvidence,fields.participationEvidence].filter(Boolean),reuniao:s.discussion},null,2));
+ s.records=[...s.records.filter(r=>r.kind!==a.kind),record];s.drafts[a.kind]={...fields};if(a.kind==='source'&&!s.rewards.includes('source'))s.rewards.push('source');savePark(s);return task;
+}
+export function advancePark(s:ParkState){if(!parkCanAdvance(s))throw Error('Envie a tarefa e corrija ajustes solicitados antes de continuar. Aguarde apenas o registro do envio.');if(s.index===PARK_ACTIVITIES.length-1){s.finished=true}else{s.index++}savePark(s)}

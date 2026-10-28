@@ -1,0 +1,2 @@
+import {h} from './dom';
+export function brandCredits(){return h('div',{class:'brand-credits'},h('div',{},h('span',{},'DESENVOLVIMENTO DO GAME'),h('div',{class:'brand-tile'},h('img',{src:'./brand/enedes-oficial.png',alt:'ENEDES — desenvolvedora do game'}))),h('div',{},h('span',{},'MISSÃO • GOVERNO DO DISTRITO FEDERAL'),h('div',{class:'brand-tile'},h('img',{src:'./brand/gdf-cgdf-oficial.png',alt:'GDF • Controladoria-Geral do Distrito Federal — responsável pela missão'}))))}

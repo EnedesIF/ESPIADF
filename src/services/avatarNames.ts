@@ -1,0 +1,4 @@
+import type {Member,Team} from '@/types';
+export const avatarName=(member:Member)=>member.avatarName?.trim()||member.name;
+export const avatarIdentity=(member:Member)=>member.avatarName?.trim()?avatarName(member)+' ('+member.name+')':member.name;
+export function setAvatarName(team:Team,memberId:string,value:string){const member=team.members.find(m=>m.id===memberId);if(!member)throw Error('Participante não encontrado.');const name=value.trim().replace(/\s+/g,' ');if(name.length>24)throw Error('Use até 24 caracteres no nome do avatar.');if(/[\u0000-\u001f\u007f]/.test(name))throw Error('Use um nome sem caracteres de controle.');if(name&&team.members.some(m=>m.id!==memberId&&avatarName(m).toLocaleLowerCase('pt-BR')===name.toLocaleLowerCase('pt-BR')))throw Error('Escolha um nome diferente dos outros avatares da equipe.');member.avatarName=name||undefined;return avatarName(member)}

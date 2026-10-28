@@ -1,0 +1,27 @@
+.mission-celebration{position:fixed;inset:0;z-index:4500;isolation:isolate;overflow:hidden;background:#123e45;color:#fff;font-family:var(--body)}
+.mission-celebration-world{position:absolute;left:50%;top:50%;width:max(100vw,177.683vh);height:max(100vh,56.28vw);transform:translate(-50%,-50%);background-repeat:no-repeat;container-type:inline-size}
+.mission-celebration-shade{position:absolute;inset:0;background:linear-gradient(#063444bf 0%,#063444aa 30%,transparent 55%,transparent 85%,#073b4480)}
+.mission-celebration>header{position:absolute;top:4%;left:8%;right:8%;height:auto!important;padding:0!important;display:block!important;text-align:center;z-index:2}
+.mission-celebration>header>span{display:inline-block;background:#153f48de;color:#fff1a3;border:1px solid #fff1a388;border-radius:30px;padding:8px 16px;font-size:clamp(.65rem,1vw,.9rem);letter-spacing:.08em}
+.mission-celebration h1{font:800 clamp(2.4rem,5vw,5.5rem)/1.08 var(--body);margin:15px 0 10px;text-shadow:0 4px 20px #002b3d}
+.mission-celebration h1 em{font-style:normal;color:#ffe28c}
+.mission-celebration header p{font-size:clamp(.9rem,1.4vw,1.1rem);margin:8px auto;max-width:700px;line-height:1.45}
+.mission-celebration header .mission-celebration-review{font-size:clamp(.72rem,1vw,.85rem);color:#ecf7e7;background:#0a3549c9;border-radius:10px;padding:9px 14px;max-width:650px}
+.mission-celebration-member{position:absolute;width:8cqw;height:11.5cqw;margin:0;transform:translate(-50%,-100%);transform-origin:50% 100%;filter:drop-shadow(0 5px 3px #173e4644)}
+.mission-celebration-member:before{content:'';position:absolute;bottom:0;left:30%;width:40%;height:4%;border-radius:50%;background:#193e4677;filter:blur(2px)}
+.mission-celebration-member>.team-cartoon-avatar{position:absolute;inset:0}
+.mission-celebration-member figcaption{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:clamp(9px,.8cqw,15px);font-weight:700;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;background:#113f47ed;border:1px solid #ffdf85;color:#fff3b4;border-radius:20px;padding:4px 9px}
+.celebrating .mission-celebration-member{animation:teamJoin 1s var(--join-delay) ease-out both}
+@keyframes teamJoin{from{opacity:0;translate:0 30px}to{opacity:1;translate:0 0}}
+.mission-fireworks{position:absolute;inset:0;z-index:1;pointer-events:none}.mission-firework{position:absolute}
+.mission-firework i{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--firework-color);box-shadow:0 0 8px var(--firework-color);opacity:0}
+.celebrating .mission-firework i{animation:missionSpark 2.4s var(--burst-delay) ease-out 3 both}
+@keyframes missionSpark{0%,10%{opacity:0;transform:translate(0,40px) scale(.2)}20%{opacity:1;transform:translate(0,0) scale(.8)}70%{opacity:.9;transform:translate(var(--spark-x),var(--spark-y)) scale(1)}100%{opacity:0;transform:translate(var(--spark-x),calc(var(--spark-y) + 40px)) scale(.3)}}
+.mission-celebration>footer{position:absolute!important;inset:auto 0 18px!important;display:flex!important;justify-content:center;height:auto!important;gap:10px;z-index:3;flex-wrap:wrap}
+.mission-celebration footer button{font-size:.85rem!important;background:#154e54!important;color:#fff!important;border:1px solid #aee3cb!important;padding:12px 18px!important;border-radius:10px}
+.mission-celebration footer button:first-child{background:#ffe28c!important;color:#153e40!important;border-color:#ffe28c!important;font-weight:800}
+@media(max-width:700px){.mission-celebration>header{left:4%;right:4%;top:5%}.mission-celebration>footer{bottom:12px!important}.mission-celebration-world{left:53%}.mission-celebration-member figcaption{max-width:90px}.mission-celebration footer button{font-size:.72rem!important;padding:10px!important}}
+@media(prefers-reduced-motion:reduce){.celebrating .mission-celebration-member{animation:none}.celebrating .mission-firework i{animation:none;opacity:.7;transform:translate(var(--spark-x),var(--spark-y))}}
+
+@media(max-width:700px){.mission-celebration-world{width:100vw;height:100vh;left:50%;background-size:cover!important}.mission-celebration-member{left:var(--mobile-x)!important;top:var(--mobile-y)!important;width:16cqw;height:24cqw}.mission-celebration-member figcaption{font-size:9px;max-width:58px;padding:3px 5px}.mission-celebration h1{font-size:clamp(2rem,8vw,3.5rem)}}
+.mission-fireworks{z-index:3}.mission-celebration>footer{z-index:4}.mission-firework i{width:7px;height:7px}
