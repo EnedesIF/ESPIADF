@@ -1,0 +1,7 @@
+import {h} from '../dom';
+import * as THREE from 'three';
+export class MiniMap{
+ root:HTMLButtonElement;private canvas=h('canvas',{width:200,height:200});
+ constructor(open:()=>void){this.root=h('button',{class:'city-minimap','aria-label':'Abrir mapa e destinos',onclick:open},this.canvas,h('small',{},'MAPA • M'))}
+ update(player:THREE.Vector3,heading:number,stations:Map<string,THREE.Vector3>,active:string){const ctx=this.canvas.getContext('2d');if(!ctx)return;const points=[...stations.values(),player];const minX=Math.min(...points.map(p=>p.x))-12,maxX=Math.max(...points.map(p=>p.x))+12,minZ=Math.min(...points.map(p=>p.z))-12,maxZ=Math.max(...points.map(p=>p.z))+12;const span=Math.max(maxX-minX,maxZ-minZ);const x=(v:number)=>100+(v-(maxX+minX)/2)/span*166,z=(v:number)=>100+(v-(maxZ+minZ)/2)/span*166;ctx.clearRect(0,0,200,200);ctx.fillStyle='#113b43';ctx.fillRect(0,0,200,200);ctx.strokeStyle='#527477';ctx.lineWidth=16;ctx.beginPath();ctx.moveTo(0,z(0));ctx.lineTo(200,z(0));ctx.stroke();ctx.lineWidth=2;ctx.strokeStyle='#b2c6be';ctx.beginPath();ctx.moveTo(0,z(9));ctx.lineTo(200,z(9));ctx.moveTo(0,z(-9));ctx.lineTo(200,z(-9));ctx.stroke();for(const [name,p] of stations){ctx.fillStyle=name===active?'#ffce69':'#7faaa5';ctx.beginPath();ctx.arc(x(p.x),z(p.z),name===active?7:3,0,Math.PI*2);ctx.fill()}ctx.save();ctx.translate(x(player.x),z(player.z));ctx.rotate(-heading);ctx.fillStyle='#31efb3';ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(7,9);ctx.lineTo(0,5);ctx.lineTo(-7,9);ctx.closePath();ctx.fill();ctx.restore()}
+}
