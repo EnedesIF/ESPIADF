@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),esbuild=require('esbuild');
+esbuild.buildSync({stdin:{contents:"export * from './src/ui/challenge/SourceChoices';export * from './src/services/parkChallenge';export {GDF_ROUTES} from './src/data/gdf/routes';export {OFFICIAL_LINKS} from './src/data/v02/missions';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'cjs',outfile:'/tmp/source-choices.cjs',alias:{'@':process.cwd()+'/src'},define:{'import.meta.env':'{}'}});const M=require('/tmp/source-choices.cjs'),mem=new Map();global.localStorage={getItem:k=>mem.get(k)||null,setItem:(k,v)=>mem.set(k,v)};global.window={dispatchEvent(){}};global.crypto=require('node:crypto').webcrypto;
+const base={name:'Teste',mentor:{email:'prof@test.local'},members:M.PARK_ROLES.map((missionRole,i)=>({id:'m'+i,name:'Pessoa '+i,missionRole,avatar:{}}))};
+for(const route of M.GDF_ROUTES){const choices=M.sourceChoices(route);assert.equal(choices.length,3);assert.equal(new Set(choices.map(c=>c.key)).size,3);assert.equal(choices.filter(c=>c.value==='oficial').length,1);assert.equal(M.OFFICIAL_LINKS[choices.find(c=>c.value==='oficial').key].url,route.url);
+ const team={...base,id:'sources-'+route.id},s=M.newParkState(team,route.id);M.lockParkRoles(team,s,s.assignments,'Compararemos as ferramentas para responder à pergunta da equipe.');s.index=4;
+ const fields={answer:'A análise compara evidências, origem dos dados e limites da informação.',hypothesis:'A fonte pertinente pode esclarecer a pergunta com informação publicada.'};
+ for(const c of choices.filter(c=>c.value!=='oficial'))assert.throws(()=>M.submitPark(team,s,{...fields,source:c.value,toolOpened:'sim'}),/ferramenta selecionada/);
+ assert.throws(()=>M.submitPark(team,s,{...fields,source:'oficial'}),/Abra a fonte/);assert(!M.parkCanAdvance(s));
+ M.submitPark(team,s,{...fields,source:'oficial',toolOpened:'sim'});assert(M.parkCanAdvance(s));M.advancePark(s);assert.equal(M.activitiesFor(s)[s.index].step,5);assert.equal(M.parkScore(s).total,0);
+}
+console.log('PASS: exactly three distinct real-tool links per route; one matches GDF source; wrong tools and missing consultation blocked; justified submission unlocks step 5 without grading.');

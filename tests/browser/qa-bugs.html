@@ -1,0 +1,8 @@
+<!doctype html><html lang="pt-BR"><meta charset="UTF-8"><div id="app"></div><script type="module">
+import '../../src/styles/main.css';import '../../src/styles/cartoon-ui.css';import '../../src/ui/demo/pilot-scene.css';
+import {ParkChallengeScene} from '../../src/ui/challenge/ParkChallengeScene';
+import {newParkState,savePark,PARK_ROLES} from '../../src/services/parkChallenge';
+const team={id:'qa-walk-map-64',name:'Teste',mentor:{email:'prof@test.local'},members:PARK_ROLES.map((missionRole,i)=>({id:'m'+i,name:['Ravi','Ana','Davi','Kauã','Luiza','Sofia'][i],missionRole,avatar:{cartoonLook:i===0?4:i}}))};
+const state=newParkState(team,'employment');state.started=true;state.discussion='Equipe investigará a oportunidade de trabalho.';state.place='square';state.position=[42,88];savePark(state);
+const game=new ParkChallengeScene(team,()=>{},()=>{},'employment');document.getElementById('app').append(game.root);
+</script></html>
