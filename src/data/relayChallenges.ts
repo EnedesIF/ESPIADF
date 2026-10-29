@@ -9,7 +9,7 @@ export function routeActivities(route:GdfRoute,park:ParkActivity[]):ParkActivity
  const script=caseScript(route),experience=routeExperience(route);
  return park.map(a=>{
   const place=script.places[a.kind as keyof typeof script.places]??a.place;
-  const titles:Record<string,string>={route:'Escolher o caminho • '+route.title,agent:'Conversar • '+route.agency,board:'Abrir • '+CASE_OBJECTS[route.id],compare:'Ouvir • '+experience.witness,source:script.sourceTitle,verify:'Conferir a descoberta • '+route.title,solution:'Montar nosso plano • '+route.title,channel:'Preparar o próximo passo • '+route.title,response:'Ler o retorno • '+route.title,final:'Apresentar a descoberta • '+route.title};
+  const titles:Record<string,string>={route:(route.id==='transport'?'Planejar o trajeto':'Conhecer o problema')+' • '+route.title,agent:'Ouvir orientação • '+route.title,board:'Abrir • '+CASE_OBJECTS[route.id],compare:'Ouvir • '+experience.witness,source:script.sourceTitle,verify:'Conferir a descoberta • '+route.title,solution:'Montar nosso plano • '+route.title,channel:'Preparar o próximo passo • '+route.title,response:'Ler o retorno • '+route.title,final:'Apresentar a descoberta • '+route.title};
   return {...a,place,title:titles[a.kind],prompt:script.questions[QUESTION_INDEX[a.kind]],...(a.kind==='agent'?{speech:script.agent}:a.kind==='compare'?{speech:route.other}:a.kind==='verify'?{speech:script.verify}:{})};
  });
 }

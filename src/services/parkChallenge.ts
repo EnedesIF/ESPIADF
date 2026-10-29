@@ -4,7 +4,7 @@ import {challengeFor} from '@/data/challenges';
 import type {CampaignId,Team} from '@/types';
 import {registrationAssignments,type TeamRole} from '@/data/cityCooperation';
 import {delivery,submitTask,type TaskDelivery} from './taskValidation';
-import {validURL,learning,pendingGDFTopics} from './learning';
+import {validURL,normalizeSourceURL,learning,pendingGDFTopics} from './learning';
 export const PARK_PREFIX='park-challenge:v1:';
 export const PARK_ROLES:TeamRole[]=['escuta','campo','verificacao','dados','articulacao','participacao'];
 export const PARK_STEPS=['Escolher a rota','Examinar informações iniciais','Comparar perspectivas','Escolher fontes','Interpretar e verificar','Propor uma resposta','Preparar participação','Avaliar a resposta','Apresentar e realizar a prática'];
@@ -34,7 +34,7 @@ export function parkState(team:Team,routeId='park'):ParkState{try{const s=JSON.p
 export function savePark(s:ParkState){localStorage.setItem(key(s.teamId,s.routeId??'park'),JSON.stringify(s))}
 export const challengeLockKey=(teamId:string,campaign:CampaignId)=>'espia:challenge-case:v1:'+teamId+':'+campaign;
 export function activeChallengeCase(team:Team,campaign:CampaignId){const id=localStorage.getItem(challengeLockKey(team.id,campaign));const locked=GDF_ROUTES.find(r=>r.id===id&&r.campaign===campaign);if(locked)return locked;return GDF_ROUTES.filter(r=>r.campaign===campaign).map(r=>({route:r,state:parkState(team,r.id)})).filter(v=>v.state.started).sort((a,b)=>Number(b.state.finished)-Number(a.state.finished)||b.state.index-a.state.index)[0]?.route}
-export function lockParkRoles(team:Team,s:ParkState,assignments:Record<string,string>,discussion:string){if(s.started)throw Error('Os papéis deste desafio já estão bloqueados.');const active=activeChallengeCase(team,stateRoute(s).campaign);if(active&&active.id!==stateRoute(s).id)throw Error('Este desafio já foi iniciado no caso '+active.title+'. Continue o progresso da equipe.');if(team.members.length<6)throw Error('Cadastre pelo menos seis participantes.');if(discussion.trim().length<20)throw Error('Registre a decisão da equipe em pelo menos 20 caracteres.');const ids=PARK_ROLES.map(r=>assignments[r]);if(new Set(ids).size!==6||ids.some(id=>!team.members.some(m=>m.id===id)))throw Error('Escolha seis responsáveis diferentes, um por papel.');s.assignments={...assignments};s.discussion=discussion.trim();s.started=true;localStorage.setItem(challengeLockKey(team.id,stateRoute(s).campaign),stateRoute(s).id);savePark(s)}
+export function lockParkRoles(team:Team,s:ParkState,assignments:Record<string,string>,discussion:string){if(s.started)throw Error('Os papéis deste desafio já estão bloqueados.');const active=activeChallengeCase(team,stateRoute(s).campaign);if(active&&active.id!==stateRoute(s).id)throw Error('Este desafio já foi iniciado no caso '+active.title+'. Continue o progresso da equipe.');if(team.members.length<6)throw Error('Cadastre pelo menos seis participantes.');if(discussion.trim().length<20)throw Error('Registre a decisão da equipe em pelo menos 20 caracteres.');const ids=PARK_ROLES.map(r=>assignments[r]);if(new Set(ids).size!==6||ids.some(id=>!team.members.some(m=>m.id===id)))throw Error('Escolha seis responsáveis diferentes, um por papel.');if(PARK_ROLES.some(role=>assignments[role]!==registrationAssignments(team.members)[role]))throw Error('Os responsáveis são os definidos no cadastro da equipe.');s.assignments={...assignments};s.discussion=discussion.trim();s.started=true;localStorage.setItem(challengeLockKey(team.id,stateRoute(s).campaign),stateRoute(s).id);savePark(s)}
 export const parkTaskKey=(step:number,routeId='park')=>challengePrefix(routeId)+'step:'+step;
 export const activityTaskKey=(s:ParkState)=>parkTaskKey(activitiesFor(s)[s.index].step,s.routeId)+(activitiesFor(s)[s.index].kind==='agent'?':agent':'');
 export const parkReview=(s:ParkState)=>delivery(s.teamId,stateRoute(s).campaign,activityTaskKey(s));
@@ -43,17 +43,24 @@ export function parkForumPending(s:ParkState){return learning().suggestions.filt
 /** Match the forum visible to this team: general questions plus this case. */
 export function parkForumToAnswer(s:ParkState){return pendingGDFTopics(s.teamId).filter(topic=>!topic.routeId||topic.routeId===stateRoute(s).id)}
 export function parkCanAdvance(s:ParkState){const t=parkReview(s);return !!t&&t.status!=='student_adjust'&&(activitiesFor(s)[s.index].kind!=='final'||parkForumToAnswer(s).length===0)}
-const long=(fields:Record<string,string>,name:string,label:string)=>{if((fields[name]?.trim().length??0)<20||fields[name].length>6000)throw Error(label+': escreva de 20 a 6.000 caracteres.')};
+const long=(fields:Record<string,string>,name:string,label:string)=>{if((fields[name]?.trim().length??0)<20||fields[name].length>6000)throw Error(label+': escreva pelo menos 20 caracteres para continuar (máximo de 6.000).')};
 export function validateParkFields(a:ParkActivity,f:Record<string,string>,s:ParkState,team:Team){
  long(f,'answer','Sua interpretação');
  if(a.kind==='route'&&!(stateRoute(s).id==='park'?['parque','externo']:['principal','alternativa']).includes(f.route))throw Error('Escolha uma rota para investigar.');
  if(a.kind==='agent'&&!s.clue)throw Error('Encontre primeiro a pista na alameda.');
  if(a.kind==='board'){if(!f.evidenceId)throw Error('Capture o quadro ou anexe sua imagem.');if(!s.records.some(r=>r.kind==='agent'))throw Error('Registre a conversa com a agente.');}
- if(a.kind==='source'){if(f.toolOpened!=='sim')throw Error('Abra a fonte indicada pelo GDF antes de registrar a análise.');if(f.source!=='oficial')throw Error('A ferramenta selecionada não responde à pergunta desta etapa. Compare as opções e escolha a fonte pertinente.');long(f,'hypothesis','Sua ideia antes da pesquisa');}
+ if(a.kind==='source'){if(f.toolOpened!=='sim')throw Error('Abra a fonte indicada pelo GDF antes de registrar a análise.');if(f.source!=='oficial')throw Error('A ferramenta selecionada não responde à pergunta desta etapa. Compare as opções e escolha a fonte pertinente.');if(stateRoute(s).campaign==='mobility'){f.researchURL=normalizeSourceURL(f.researchURL,true);if(!validResearchDate(f.researchDate))throw Error('Informe a data da consulta à fonte oficial.');if(!f.researchEvidence)throw Error('Adicione uma evidência da consulta real (print ou foto).');if(f.sourceStatus==='unavailable')long(f,'accessIssue','O que aconteceu ao consultar a fonte')}else long(f,'hypothesis','Sua ideia antes da pesquisa');}
  if(a.kind==='solution')long(f,'responsibilities','Responsáveis e ações');
- if(a.kind==='channel'){if(!['consulta','lai','ouvidoria','servico'].includes(f.channel))throw Error('Escolha a ferramenta adequada.');long(f,'draft','Minuta ou conclusão da consulta');}
+ if(a.kind==='channel'){if(!['consulta','lai','ouvidoria','servico'].includes(f.channel))throw Error('Escolha a ferramenta adequada.');long(f,'draft',f.channel==='consulta'?'Conclusão da consulta':'Texto do encaminhamento');if(stateRoute(s).campaign==='mobility')validateExternalParticipation(f);}
  if(a.kind==='final'){
   if(activitiesFor(s).slice(0,-1).some(a=>{const t=delivery(s.teamId,stateRoute(s).campaign,parkTaskKey(a.step,s.routeId)+(a.kind==='agent'?':agent':''));return !t||t.status==='student_adjust'}))throw Error('Envie as tarefas dos oito passos anteriores e corrija eventuais ajustes solicitados.');
+  if(stateRoute(s).campaign==='mobility'){
+   const consolidated=consolidateParkFields(s,team,f);Object.assign(f,consolidated);f.researchURL=normalizeSourceURL(f.researchURL,true);
+   if(!validResearchDate(f.researchDate))throw Error('Confira a data da pesquisa registrada no percurso.');
+   if(!f.researchEvidence)throw Error('Anexe a evidência da pesquisa real.');long(f,'research','Conclusão da pesquisa');
+   if(!['consulta','lai','ouvidoria','servico','acao'].includes(f.realChannel))throw Error('Confira o encaminhamento da etapa 7.');long(f,'participation','Conclusão ou encaminhamento');validateExternalParticipation(f);if(f.externalSent==='sim'&&f.realChannel!=='acao'){const decision=delivery(s.teamId,stateRoute(s).campaign,parkTaskKey(7,s.routeId));if(!decision||!['gdf_pending','validated'].includes(decision.status))throw Error('A minuta precisa da revisão do professor antes de registrar um envio externo.');}
+   if(f.confirm!=='sim')throw Error('Confirme a conferência das informações e evidências reais da equipe.');
+  }else{
   if(!validURL(f.researchURL,true))throw Error('Informe um link HTTPS de uma fonte oficial para a pesquisa real.');
   for(const date of [f.researchDate,f.participationDate]){if(!/^\d{4}-\d{2}-\d{2}$/.test(date??'')||!Number.isFinite(Date.parse(date))||Date.parse(date)>Date.now()+86400000)throw Error('Informe datas válidas para as duas entregas reais.');}
   if(!f.researchEvidence||!f.participationEvidence)throw Error('Anexe um print ou foto para cada uma das duas entregas reais.');
@@ -61,12 +68,30 @@ export function validateParkFields(a:ParkActivity,f:Record<string,string>,s:Park
   if(!['consulta','lai','ouvidoria','acao','servico'].includes(f.realChannel))throw Error('Identifique a participação real realizada.');
   for(const m of team.members)long(f,'contribution:'+m.id,'Contribuição de '+m.name);
   if(f.confirm!=='sim')throw Error('Confirme que as duas atividades foram realizadas fora da simulação.');
+  }
  }
 }
 export function submitPark(team:Team,s:ParkState,fields:Record<string,string>,index=s.index){if(!Number.isInteger(index)||index<0||index>s.index)throw Error('Tarefa indisponível.');const context={...s,index},previous=parkReview(context);if(!s.started||(s.finished&&previous?.status!=='student_adjust'))throw Error('Desafio indisponível.');const a=activitiesFor(s)[index],member=team.members.find(m=>m.id===s.assignments[a.role]);if(!member)throw Error('Responsável não encontrado.');validateParkFields(a,fields,context,team);const d=parkReview(context);if(d&&d.status!=='student_adjust')throw Error('Aguarde a avaliação e a confirmação do GDF.');
  const record:ParkRecord={kind:a.kind,memberId:member.id,memberName:member.name,at:Date.now(),fields:{...fields}};
  let task:TaskDelivery|undefined;
- task=submitTask(team,stateRoute(s).campaign,activityTaskKey(context),'Desafio '+challengeFor(stateRoute(s).campaign).number+' • '+stateRoute(s).title+' • Etapa '+a.step+'/9 • '+PARK_STEPS[a.step-1],member.id,JSON.stringify({tarefa:a.title,participante:member.name,respostas:fields,historico:[...s.records.filter(r=>r.kind!==a.kind),record],evidenceId:fields.evidenceId,evidenceIds:[fields.researchEvidence,fields.participationEvidence].filter(Boolean),reuniao:s.discussion},null,2));
+ task=submitTask(team,stateRoute(s).campaign,activityTaskKey(context),'Desafio '+challengeFor(stateRoute(s).campaign).number+' • '+stateRoute(s).title+' • Etapa '+a.step+'/9 • '+PARK_STEPS[a.step-1],member.id,JSON.stringify({tarefa:a.title,participante:member.name,respostas:fields,historico:[...s.records.filter(r=>r.kind!==a.kind),record].map(({kind,memberId,memberName,at})=>({kind,memberId,memberName,at})),evidenceId:fields.evidenceId,evidenceIds:[fields.researchEvidence,fields.participationEvidence].filter(Boolean),reuniao:s.discussion},null,2));
  s.records=[...s.records.filter(r=>r.kind!==a.kind),record];s.drafts[a.kind]={...fields};if(a.kind==='source'&&!s.rewards.includes('source'))s.rewards.push('source');savePark(s);return task;
 }
 export function advancePark(s:ParkState){if(!parkCanAdvance(s))throw Error('Envie a tarefa e corrija ajustes solicitados antes de continuar. Aguarde apenas o registro do envio.');if(s.index===PARK_ACTIVITIES.length-1){s.finished=true}else{s.index++}savePark(s)}
+
+export const validResearchDate=(date:string)=>/^\d{4}-\d{2}-\d{2}$/.test(date??'')&&Number.isFinite(Date.parse(date))&&new Date(date+'T12:00:00').toISOString().slice(0,10)===date&&Date.parse(date)<=Date.now()+86400000;
+export function validateExternalParticipation(f:Record<string,string>){
+ if(f.externalSent!=='sim')return;
+ if((f.realChannel??f.channel)==='consulta')throw Error('Uma consulta suficiente não é um envio externo. Revise a opção escolhida.');
+ if(!validResearchDate(f.participationDate))throw Error('Informe a data apenas da participação que realmente ocorreu.');
+ if(!f.participationEvidence)throw Error('Adicione o comprovante da participação externa realizada.');
+ if(f.externalConfirm!=='sim')throw Error('Confirme que essa participação externa realmente ocorreu.');
+}
+export function consolidateParkFields(s:ParkState,team:Team,current:Record<string,string>={}){
+ const recorded=(kind:ParkKind)=>s.records.find(r=>r.kind===kind)?.fields??{};
+ const source={...s.drafts.source,...recorded('source')},channel={...s.drafts.channel,...recorded('channel')};
+ const result:Record<string,string>={researchURL:source.researchURL??'',researchDate:source.researchDate??'',researchEvidence:source.researchEvidence??'',research:source.answer??'',sourceStatus:source.sourceStatus??'consulted',accessIssue:source.accessIssue??'',realChannel:channel.channel??'',participation:channel.draft??channel.answer??'',externalSent:channel.externalSent??'nao',participationDate:channel.participationDate??'',participationEvidence:channel.participationEvidence??'',externalConfirm:channel.externalConfirm??''};
+ for(const m of team.members){const own=s.records.filter(r=>r.memberId===m.id&&r.kind!=='final').map(r=>r.fields.answer||r.fields.draft||'').filter(Boolean);result['contribution:'+m.id]=own.join('\n\n')}
+ for(const [key,value] of Object.entries(current))if(value!==undefined)result[key]=value;
+ return result;
+}

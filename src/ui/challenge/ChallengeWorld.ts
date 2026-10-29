@@ -18,7 +18,7 @@ export const challengePortalAt=(place:ChallengePlace,p:PilotPoint,campaign:impor
 const OPEN_FLOOR:import('../demo/PilotGround').PilotMap={floor:[[7,58],[93,58],[95,97],[5,97]],solids:[]};
 const TITLES={
  work:['Praça de formação e carreiras','Alameda das oficinas','Centro de orientação profissional','Laboratório de projetos e carreiras'],
- territory:['Praça e quadra comunitária','Alameda da coleta e do jardim','Pavilhão de serviços comunitários','Sala de planejamento do bairro'],
+ territory:['Praça e quadra comunitária','Alameda da coleta e do jardim','Pavilhão de serviços comunitários','Sala de planejamento da Região Administrativa'],
  health:['Praça da UBS','Alameda de educação em saúde','Orientação e vacinação','Sala de orientação em saúde']
 };
 const PLACES:ChallengePlace[]=['square','alameda','park','lab'];

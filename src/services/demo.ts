@@ -20,3 +20,9 @@ export async function createDemoTeam(): Promise<Team> {
   };
   return backend().createTeam(team, DEMO_PASSWORD);
 }
+
+/** Route-specific demo saves keep the player's other investigations intact. */
+export async function playableDemoFor(routeId:string){
+ const id='espia-playable-demo-'+routeId,old=await backend().getTeam(id);if(old)return old;
+ const base=await createDemoTeam();return backend().createTeam({...base,id,name:'Vértice • '+routeId+' (demo)',login:'DEMO-'+routeId.toUpperCase(),members:base.members.map((member,index)=>({...member,id:id+'-m'+index,avatar:{...member.avatar,cartoonLook:member.avatar.cartoonLook??index}}))},DEMO_PASSWORD);
+}

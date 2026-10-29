@@ -5,7 +5,7 @@ import { KIND_MARK } from '@/systems/EvidenceSystem';
 import type { SolutionDraft } from '@/types';
 import { bus } from '@/game/EventBus';
 
-const AFFECTED = ['Estudantes', 'Trabalhadores', 'Pessoas com deficiência', 'Idosos', 'Moradores do bairro', 'Escola'];
+const AFFECTED = ['Estudantes', 'Trabalhadores', 'Pessoas com deficiência', 'Idosos', 'Moradores da Região Administrativa', 'Escola'];
 const PROBLEMS = [
   'Estudantes da Quadra 214 chegam atrasados ao Centro de Ensino.',
   'Os ônibus da linha 0.214 chegam lotados e em intervalos irregulares.',

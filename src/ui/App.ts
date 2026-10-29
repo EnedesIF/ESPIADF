@@ -5,7 +5,7 @@ import {activeChallengeCase} from '@/services/parkChallenge';
 import {challengeChoice} from './challenge/ChallengeChoice';
 import {relayRoute} from '@/data/relayChallenges';
 import {selectRoute} from '@/services/gdfRoutes';
-import {createDemoTeam} from '@/services/demo';
+import {createDemoTeam,playableDemoFor} from '@/services/demo';
 import {ParkChallengeScene as PilotScene} from './challenge/ParkChallengeScene';
 import {routeChoice} from './v02/RouteChoice';
 import {selectedRoute} from '@/services/gdfRoutes';
@@ -109,8 +109,8 @@ export class App {
     try { if (t) localStorage.setItem(CURRENT, t.id); else localStorage.removeItem(CURRENT); } catch { /* ok */ }
   }
 
-  async showPilot(){this.leaveGame();this.background('none');if(!this.team)this.setTeam(await createDemoTeam());this.mount(challengeChoice(this))}
-  async showChallenge(routeId:string){if(!this.team)this.setTeam(await createDemoTeam());const requested=relayRoute(routeId);const route=activeChallengeCase(this.team!,requested.campaign)??requested;if(!(await reserveChallenge(this.team!.id,route.campaign))){await this.startCity(route.campaign);return}this.activeRelayRoute=route.id;selectRoute(this.team!.id,route.campaign,route.id,route.question);this.leaveGame();this.background('none');this.engine.setIllustrated(true);this.pilot=new PilotScene(this.team!,()=>void this.showPilot(),mode=>this.showPilotReview(mode),route.id,memberId=>this.showAvatar('hub',memberId,()=>void this.showChallenge(route.id)));this.mount(this.pilot.root)}
+  async showPilot(campaign?:CampaignId){this.leaveGame();this.background('none');if(!this.team)this.setTeam(await createDemoTeam());this.mount(challengeChoice(this,campaign))}
+  async showChallenge(routeId:string){if(!this.team)this.setTeam(await createDemoTeam());const requested=relayRoute(routeId);if(isDemo(this.team)&&this.team!.id!=='espia-playable-demo-'+routeId)this.setTeam(await playableDemoFor(routeId));const route=activeChallengeCase(this.team!,requested.campaign)??requested;if(!(await reserveChallenge(this.team!.id,route.campaign))){await this.startCity(route.campaign);return}this.activeRelayRoute=route.id;if(selectedRoute(this.team!.id,route.campaign)?.id!==route.id)selectRoute(this.team!.id,route.campaign,route.id,route.question);this.leaveGame();this.background('none');this.engine.setIllustrated(true);this.pilot=new PilotScene(this.team!,()=>void this.showPilot(route.campaign),mode=>this.showPilotReview(mode),route.id,memberId=>this.showAvatar('hub',memberId,()=>void this.showChallenge(route.id)));this.mount(this.pilot.root)}
   showPilotReview(mode:'teacher'|'admin'){if(!this.team?.name.includes('(demo)'))return;this.leaveGame();this.background('none');this.mount(h('div',{class:'screen dash'},h('button',{class:'btn',onclick:()=>void this.showChallenge(this.activeRelayRoute)},'← Voltar ao percurso e ao revezamento'),h('h1',{},mode==='teacher'?'Professor • demonstração local':'GDF • demonstração local'),relayDashboard(mode,this.team.mentor.email)))}
   async showCompletedDemo(routeId='park'){const team=await completedDemo(routeId);this.setTeam(team);this.leaveGame();this.background('none');this.engine.setIllustrated(true);this.mount(completedDemoScreen(this,team,routeId))}
   showOpening() { storyStep(1);this.leaveGame(); this.background('night'); this.mount(renderOpening(this)); }

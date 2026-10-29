@@ -1,8 +1,8 @@
 import type {CampaignId} from '@/types';
 export const CHALLENGES:{id:CampaignId;number:number;title:string;pitch:string}[]=[
- {id:'mobility',number:1,title:'Meu caminho pela cidade',pitch:'Investiguem um problema no deslocamento e proponham um caminho fundamentado.'},
- {id:'work',number:2,title:'Meu próximo passo',pitch:'Investiguem oportunidades, formação ou uma carreira com informação verificada.'},
- {id:'territory',number:3,title:'Nosso lugar na cidade',pitch:'Investiguem o uso dos espaços e os serviços que atendem a comunidade.'},
- {id:'health',number:4,title:'Saúde no bairro',pitch:'Investiguem as informações e os canais de acesso aos serviços de saúde.'}
+ {id:'mobility',number:1,title:'Meu caminho pela cidade',pitch:'Investiguem situações do caminho pela cidade e descubram como buscar informações e soluções.'},
+ {id:'work',number:2,title:'Meu próximo passo',pitch:'Descubram oportunidades de estudo, trabalho e outras atividades usando informações oficiais.'},
+ {id:'territory',number:3,title:'Nosso lugar na cidade',pitch:'Investiguem os espaços e serviços da comunidade e descubram como buscar melhorias na Região Administrativa.'},
+ {id:'health',number:4,title:'Saúde na nossa Região Administrativa',pitch:'Descubram onde encontrar informações sobre serviços de saúde e como solicitar atendimento ou melhorias.'}
 ];
 export const challengeFor=(id:CampaignId)=>CHALLENGES.find(c=>c.id===id)!;

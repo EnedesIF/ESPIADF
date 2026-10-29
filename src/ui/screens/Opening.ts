@@ -34,7 +34,7 @@ export function renderOpening(app: App) {
   const demo = async () => {
     void audio.activate(true);
     const body=h('div',{class:'panel modal'},h('h2',{},'Como deseja explorar a demo?'),h('p',{},'Veja o desafio inteiro pronto ou jogue o percurso desde o início.'));
-    const box=modal(body);body.append(h('button',{class:'btn',onclick:()=>{box.close();void app.showCompletedDemo()}},'Ver desafio concluído • 9 etapas e 6 personagens'),h('button',{class:'btn ghost',onclick:async()=>{box.close();const t=await createDemoTeam();app.setTeam(t);await app.showChallenge('park')}},'Jogar o percurso na cidade'));
+    const box=modal(body);body.append(h('button',{class:'btn',onclick:()=>{box.close();void app.showCompletedDemo()}},'Ver desafio concluído • 9 etapas e 6 personagens'),h('button',{class:'btn ghost',onclick:async()=>{box.close();const t=await createDemoTeam();app.setTeam(t);await app.showPilot('mobility')}},'Jogar o percurso na cidade'));
 
   };
 

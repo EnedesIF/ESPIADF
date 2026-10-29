@@ -1,0 +1,16 @@
+/* GDF review: readable answers and one clear next action. */
+.pilot-dialog .gdf-student-record,.pilot-dialog .gdf-evidence-picker,.pilot-dialog .gdf-channel-details{background:#f6fbf4;color:#173e43;border:1px solid #9dbcb1;border-radius:12px;padding:14px;margin:12px 0;max-width:100%;box-sizing:border-box}
+.pilot-dialog .gdf-student-record p,.pilot-dialog .gdf-integrated-records p{white-space:pre-wrap;overflow-wrap:anywhere;color:#173e43}
+.pilot-dialog .gdf-student-record b{color:#0c574d}
+.pilot-dialog .learning-concept{background:#dceee5;color:#153e40;padding:14px;border-left:4px solid #188269;border-radius:8px;line-height:1.6}
+.pilot-dialog .gdf-evidence-picker input[type=file]{max-width:100%;box-sizing:border-box}
+.pilot-dialog .park-role-card>.team-cartoon-avatar{position:relative;width:110px;height:110px;max-width:100%;margin:auto}
+.pilot-dialog .park-role-card{background:#fff;color:#173e43;border:1px solid #a8c8b9;border-radius:12px;padding:12px}
+.pilot-dialog .park-role-card small{color:#315f55}
+.pilot-dialog .gdf-channel-details label{display:grid;gap:8px}
+.pilot-dialog .gdf-evidence-picker button{min-height:44px}
+.high-contrast .pilot-dialog .gdf-student-record,.high-contrast .pilot-dialog .gdf-channel-details,.high-contrast .pilot-dialog .gdf-evidence-picker{background:#000;color:#fff;border-color:#fff}
+.high-contrast .pilot-dialog .gdf-student-record p,.high-contrast .pilot-dialog .gdf-student-record b{color:#fff}
+
+.pilot-dialog .task-card{background:#f6fbf4;color:#173e43;border:1px solid #9dbcb1;border-radius:12px;padding:14px}
+.pilot-dialog .task-card p,.pilot-dialog .task-card h3,.pilot-dialog .task-card dt,.pilot-dialog .task-card dd{color:#173e43;white-space:pre-wrap;overflow-wrap:anywhere}

@@ -1,7 +1,7 @@
 import type {CampaignId} from '@/types';
 import type {CityStage} from './cityMissions';
 export const TEAM_ROLES={
- campo:{name:'Explorador de campo',task:'Observar objetos e verificar outro ponto do bairro.'},
+ campo:{name:'Explorador de campo',task:'Observar objetos e verificar outro ponto da Região Administrativa.'},
  escuta:{name:'Repórter da comunidade',task:'Ouvir personagens e comparar experiências.'},
  dados:{name:'Analista de evidências',task:'Escolher ferramentas do GDF e reunir fontes.'},
  articulacao:{name:'Articulador de soluções',task:'Propor a intervenção e revisar a entrega coletiva.'},

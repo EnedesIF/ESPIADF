@@ -11,7 +11,7 @@ for(let i=0;i<10;i++){
  if(a.kind==='agent'){assert.throws(()=>M.submitPark(team,s,f),/pista/);s.clue=true}
  if(a.kind==='source'){assert.throws(()=>M.submitPark(team,s,{...f,source:'visitante'}),/fonte/);assert.throws(()=>M.submitPark(team,s,{...f,toolOpened:''}),/Abra/)}
  if(a.kind==='board')assert.throws(()=>M.submitPark(team,s,{...f,evidenceId:''}),/Capture/);
- if(a.kind==='final'){assert.throws(()=>M.submitPark(team,s,{...f,researchEvidence:''}),/Anexe/);assert.throws(()=>M.submitPark(team,s,{...f,'contribution:m0':''}),/Contribuição/)}
+ if(a.kind==='final'){assert.throws(()=>M.submitPark(team,s,{...f,researchEvidence:''}),/Anexe/);assert(M.consolidateParkFields(s,team)['contribution:m0'].length>=20,'Contribuição deve ser recuperada do percurso')}
  let t=M.submitPark(team,s,f);assert(t,'Every submission goes to teacher, including the first agent');assert.equal(t.memberId,s.assignments[a.role]);assert(M.parkCanAdvance(s));assert.throws(()=>M.gdfValidate(t.id,'confirm','Não pode antecipar.'),/professor/);
  if(i===0){M.teacherGrade(t.id,team.mentor.email,'adjust',undefined,'Explique melhor a necessidade.');t=M.submitPark(team,s,{...f,answer:f.answer+' Versão revista.'});assert.equal(t.revision,2)}
  M.teacherGrade(t.id,team.mentor.email,'approve',100,'Entrega analisada com evidências e interpretação.');assert(M.parkCanAdvance(s),'Submission permits advance before validation');
