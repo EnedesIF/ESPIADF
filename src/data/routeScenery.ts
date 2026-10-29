@@ -11,7 +11,7 @@ export const ROUTE_SCENERY:Record<string,[string,string,string,string]>={
  training:['Praça da formação digital','Alameda das oficinas digitais','Centro de formação digital','Laboratório de projetos digitais'],
  pay:['Praça das carreiras públicas','Alameda da informação pública','Orientação de pesquisa remuneratória','Sala de pesquisa sobre remuneração'],
  vacancies:['Praça das carreiras do serviço público','Alameda da administração pública','Orientação sobre cargos públicos','Sala de pesquisa de cargos e seleções'],
- court:['Praça e quadra comunitária','Alameda do esporte comunitário','Orientação de uso da quadra','Sala de planejamento do uso da quadra'],
+ court:['Praça da quadra','Alameda da comunidade','Administração de Águas Claras','Sala da equipe'],
  waste:['Praça da separação de resíduos','Alameda da coleta convencional e seletiva','Orientação sobre coleta e separação','Sala do plano de resíduos da Região Administrativa'],
  police:['Praça da informação cidadã','Alameda dos relatórios públicos','Pavilhão de leitura de relatórios','Sala de pesquisa dos indicadores da PMDF'],
  ubs:['Praça de acesso à UBS','Alameda dos serviços de saúde','Orientação de acesso à UBS','Sala de pesquisa dos serviços da UBS'],

@@ -1,7 +1,7 @@
 import {relayRoute} from '@/data/relayChallenges';
 import {parkState} from './parkChallenge';
 import {backend} from './backend';
-import {createDemoTeam,DEMO_PASSWORD} from './demo';
+import {createDemoTeam,correctDemoCast,DEMO_PASSWORD} from './demo';
 import {newParkState,lockParkRoles,activitiesFor,savePark,activityTaskKey} from './parkChallenge';
 import {delivery,submitTask,teacherGrade,gdfValidate} from './taskValidation';
 export const COMPLETED_DEMO_ID='espia-completed-demo-v1';
@@ -20,7 +20,7 @@ export const DEMO_ANSWERS=[
 ];
 export async function completedDemo(routeId='park'){const route=relayRoute(routeId),campaign=route.campaign,demoId=completedDemoTeamId(route.id);
  let team=await backend().getTeam(demoId);if(!team){const base=await createDemoTeam();team=await backend().createTeam({...base,id:demoId,name:demoId===COMPLETED_DEMO_ID?'Percurso concluído (demo)':route.title+' • percurso concluído (demo)',login:demoId===COMPLETED_DEMO_ID?'DEMO-CONCLUIDA':'DEMO-CONCLUIDA-'+route.code,mentor:{...base.mentor,email:'concluida@demo.local'},members:base.members.map((m,i)=>({...m,id:demoId+'-'+i}))},DEMO_PASSWORD)}
- const saved=parkState(team,route.id);if(saved.finished&&activitiesFor(saved).every((_,index)=>delivery(team!.id,campaign,activityTaskKey({...saved,index}))?.status==='validated'))return team;const s=newParkState(team,route.id);
+ await correctDemoCast(team); const saved=parkState(team,route.id);if(saved.finished&&activitiesFor(saved).every((_,index)=>delivery(team!.id,campaign,activityTaskKey({...saved,index}))?.status==='validated'))return team;const s=newParkState(team,route.id);
  lockParkRoles(team,s,s.assignments,'A equipe escolheu investigar: '+route.question);const activities=activitiesFor(s);s.events=[];
  for(const [i,a] of activities.entries()){s.index=i;const member=team.members.find(m=>m.id===s.assignments[a.role])!,fields:Record<string,string>={answer:route.id==='park'?DEMO_ANSWERS[i]:exampleAnswer(routeId,a.kind),example:'DEMONSTRAÇÃO FICTÍCIA • não representa pesquisa ou participação real.'};if(a.kind==='final')for(const m of team.members)fields['contribution:'+m.id]=m.name+' participou na função atribuída, reuniu seu registro e colaborou na conclusão coletiva de exemplo.';
  const previous=delivery(team.id,campaign,activityTaskKey(s));const task=previous??submitTask(team,campaign,activityTaskKey(s),'EXEMPLO • '+a.title,member.id,JSON.stringify(fields));if(['teacher_pending','teacher_adjust'].includes(task.status))teacherGrade(task.id,team.mentor.email,'approve',100,'EXEMPLO FICTÍCIO: interpretação e evidências conferidas para apresentação do fluxo.');if(delivery(team.id,campaign,activityTaskKey(s))?.status==='gdf_pending')gdfValidate(task.id,'confirm','EXEMPLO FICTÍCIO: avaliação do professor confirmada para demonstração.');s.records.push({kind:a.kind,memberId:member.id,memberName:member.name,at:Date.now(),fields});s.events.push({id:'demo-'+i,at:Date.now(),kind:'exemplo',label:'EXEMPLO • '+a.title,memberId:member.id,place:a.place,step:a.step});}

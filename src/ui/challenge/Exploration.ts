@@ -13,7 +13,7 @@ export function stageClue(route:GdfRoute,step:number):{id:string;place:Challenge
  const proposed=at[step-1],location=world[places[step-1]];
  const point:PilotPoint=location.portals.some(portal=>pilotDistance(proposed,portal.at)<6)?[45,84]:proposed;
  const next:ChallengePlace[]=['square','park',compare,source,verify,solution,channel,response,'lab'];
- const hint=script.clues[step-1]+(step===3?' Procure '+routeExperience(route).witness.toLowerCase()+'.':'');return {id:'step:'+step,place:places[step-1],at:point,text:hint};
+ const hint=script.clues[step-1]+(step===(route.id==='court'?4:3)?' Procure '+routeExperience(route).witness.toLowerCase()+'.':'');return {id:'step:'+step,place:places[step-1],at:point,text:hint};
 }
 export const nearGuide=(place:string,point:PilotPoint)=>place==='park'&&pilotDistance(point,[57,69])<4.5;
 export function sceneCamera(viewWidth:number,viewHeight:number,point:PilotPoint){const width=Math.max(viewWidth,viewHeight*1.77683),height=width/1.77683;return {width,height,x:Math.max(viewWidth-width,Math.min(0,viewWidth*.5-point[0]/100*width)),y:Math.max(viewHeight-height,Math.min(0,viewHeight*.72-point[1]/100*height))}}

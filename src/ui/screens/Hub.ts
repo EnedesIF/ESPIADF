@@ -47,7 +47,7 @@ export function renderHub(app: App) {
     clear(side);
     const s = sessions[sel.id];const slot=availability(sel.id,team.id);
     side.append(
-      h('div', { class: 'panel brief' },selectedRoute(team.id,sel.id)?h('p',{class:'real-feedback'},'Rota '+selectedRoute(team.id,sel.id)!.code+' • '+selectedRoute(team.id,sel.id)!.title):null,h('button',{class:'btn ghost',onclick:()=>app.showRouteChoice(sel.id)},'Escolher / trocar rota de investigação'),
+      h('div', { class: 'panel brief' },selectedRoute(team.id,sel.id)?h('p',{class:'real-feedback'},selectedRoute(team.id,sel.id)!.title):null,h('button',{class:'btn ghost',onclick:()=>app.showRouteChoice(sel.id)},'Escolher / trocar rota de investigação'),
         h('div', { class: 'eyebrow' }, `BRIEFING // ${sel.axis}`),
         h('p', {}, 'Entre na cidade com sua equipe. Converse, investigue objetos, consulte as fontes no celular e aplique uma solução no cenário.'),
         sel.available

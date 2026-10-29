@@ -23,7 +23,7 @@ export function challengeChoice(app:App,initialCampaign?:CampaignId){
  };
  const cases=(campaign:CampaignId)=>{
   const c=challengeFor(campaign);clear(root);
-  const cards=GDF_ROUTES.filter(r=>r.campaign===campaign).map(route=>h('button',{class:'route-card case-card',onclick:()=>void app.showChallenge(route.id)},h('span',{class:'eyebrow'},'CASO • '+route.title),h('p',{},route.question),h('small',{},route.source),h('b',{},'Começar investigação →')));
+  const cards=GDF_ROUTES.filter(r=>r.campaign===campaign).map(route=>h('button',{class:'route-card case-card',onclick:()=>void app.showChallenge(route.id)},h('span',{class:'eyebrow'},'CASO • '+route.title),h('p',{},route.id==='ubs'?'Uma pessoa precisa encontrar uma UBS e descobrir quais serviços estão disponíveis.':route.id==='dengue'?'Há preocupação com a dengue na comunidade. Onde podemos consultar informações oficiais e orientações de prevenção?':route.question),h('small',{},route.id==='court'?'Águas Claras • normas de uso dos espaços esportivos':route.source),h('b',{},'Começar investigação →')));
   root.append(h('button',{class:'btn ghost',onclick:home},'← Voltar aos quatro desafios'),h('header',{},h('span',{class:'eyebrow'},'DESAFIO '+c.number+' • 9 ETAPAS'),h('h1',{},'Qual situação vamos investigar?'),h('p',{},'Escolham uma situação. Depois, a equipe vai definir o que deseja descobrir.')),h('div',{class:'route-grid case-grid'},...cards));
  };
  initialCampaign?cases(initialCampaign):home();return root;

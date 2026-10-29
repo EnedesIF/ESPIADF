@@ -1,3 +1,5 @@
+import {COURT_SCRIPT_UPDATE,POLICE_SCRIPT_UPDATE} from './territoryReview';
+import {UBS_SCRIPT_UPDATE} from './healthReview';
 import {MOBILITY_SCRIPT_UPDATES} from './mobilityReview';
 import type {GdfRoute} from './gdf/routes';
 import type {ChallengePlace} from '@/ui/challenge/ChallengeWorld';
@@ -98,3 +100,9 @@ export const CASE_SCRIPTS:Record<string,CaseScript>={
 for(const [id,update] of Object.entries(MOBILITY_SCRIPT_UPDATES))Object.assign(CASE_SCRIPTS[id],update);
 export const caseScript=(route:GdfRoute)=>CASE_SCRIPTS[route.id];
 export const QUESTION_INDEX:Record<string,number>={route:0,agent:1,board:2,compare:3,source:4,verify:5,solution:6,channel:7,response:8,final:9};
+
+Object.assign(CASE_SCRIPTS.ubs,UBS_SCRIPT_UPDATE);
+
+Object.assign(CASE_SCRIPTS.court,COURT_SCRIPT_UPDATE);
+
+Object.assign(CASE_SCRIPTS.police,POLICE_SCRIPT_UPDATE);

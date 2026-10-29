@@ -1,3 +1,5 @@
+import {TERRITORY_ROUTE_UPDATES} from '../territoryReview';
+import {UBS_ROUTE_UPDATE} from '../healthReview';
 import {MOBILITY_ROUTE_UPDATES} from '../mobilityReview';
 import type {CampaignId} from '@/types';
 export interface GdfRoute{id:string;code:string;campaign:CampaignId;title:string;question:string;agency:string;source:string;url:string;tool:string;search:string;initial:string;other:string;facts:string[];limit:string;record:string;participation:string;channel:'lai'|'ouvidoria';deep?:string;warning?:string;extra?:{label:string;url:string};art:'bus'|'ramp'|'lamp'|'park'|'jobs'|'course'|'pay'|'vacancy'|'court'|'waste'|'police'|'ubs'|'vaccine'|'water'|'food'}
@@ -21,3 +23,7 @@ export const GDF_ROUTES:GdfRoute[]=[
 for(const route of GDF_ROUTES)Object.assign(route,MOBILITY_ROUTE_UPDATES[route.id]??{});
 export const routesFor=(campaign:CampaignId)=>GDF_ROUTES.filter(r=>r.campaign===campaign);
 export const GDF_STEPS=['Escolher a rota','Examinar informações iniciais','Comparar perspectivas','Escolher fontes','Interpretar e verificar','Propor um próximo passo','Preparar participação','Avaliar a resposta','Apresentar e realizar a prática'];
+
+Object.assign(GDF_ROUTES.find(r=>r.id==='ubs')!,UBS_ROUTE_UPDATE);
+
+for(const [id,update] of Object.entries(TERRITORY_ROUTE_UPDATES))Object.assign(GDF_ROUTES.find(r=>r.id===id)!,update);

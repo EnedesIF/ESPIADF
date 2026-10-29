@@ -210,3 +210,5 @@ export const MOBILITY_MAP_DESCRIPTIONS:Record<string,string[]>={
   ]
 };
 export const reviewedMobility=(route:GdfRoute)=>route.campaign==='mobility';
+
+MOBILITY_MAP_DESCRIPTIONS.ubs=['Conheça a situação e consulte o mapa.','Explore o caminho e encontre a orientação da unidade.','Converse sobre o acesso e consulte o registro da unidade.','Pesquise informações públicas e organize as descobertas.'];

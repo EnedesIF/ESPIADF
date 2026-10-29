@@ -2,9 +2,9 @@ const A=require('node:assert/strict'),E=require('esbuild');E.buildSync({stdin:{c
 for(const raw of ['df.gov.br','www.df.gov.br','https://www.df.gov.br/pagina?a=1#x'])A(M.normalizeSourceURL(raw,true).startsWith('https://'));
 for(const raw of ['javascript:alert(1)','https://df.gov.br.evil.com/','https://df.gov.br@evil.com','https://evil.com@www.df.gov.br/','https://127.0.0.1/','//www.df.gov.br/','http://df.gov.br','https://df.gov.br:8000/'])A.throws(()=>M.normalizeSourceURL(raw,true));
 A(!M.validResearchDate('2026-02-31'));A(!M.validResearchDate('2099-01-01'));A.equal(Object.keys(M.CIVIC_CONCEPTS).length,7);A.equal(M.GDF_ROUTES.find(r=>r.id==='sanitary').code,'4D');
-for(const route of M.GDF_ROUTES.filter(r=>r.campaign==='mobility')){
+for(const route of M.GDF_ROUTES.filter(r=>r.campaign==='mobility'||r.id==='ubs')){
  const team={id:'review-'+route.id,name:'Equipe',mentor:{email:'prof@test.local'},members:M.PARK_ROLES.map((missionRole,i)=>({id:'m'+i,name:'Integrante '+i,missionRole,avatar:{cartoonLook:i}}))},s=M.newParkState(team,route.id),acts=M.activitiesFor(s),tasks=[];
- M.lockParkRoles(team,s,s.assignments,'Qual informação precisamos descobrir para orientar a comunidade?');A.equal(acts.length,10);A.equal(new Set(acts.map(a=>a.role)).size,6);A.equal(M.sourceChoices(route).length,1);
+ M.lockParkRoles(team,s,s.assignments,'Qual informação precisamos descobrir para orientar a comunidade?');A.equal(acts.length,10);A.equal(new Set(acts.map(a=>a.role)).size,6);A.equal(M.sourceChoices(route).length,route.id==='ubs'?3:1);
  for(let i=0;i<10;i++){if(i===1)s.clue=true;const a=acts[i],f={answer:'Nossa resposta identifica as evidências, as informações e o que precisa ser confirmado.'};
  if(a.kind==='route')f.route=route.id==='park'?'parque':'principal';if(a.kind==='board')f.evidenceId='cenario';
  if(a.kind==='source'){Object.assign(f,{source:'oficial',toolOpened:'sim',researchURL:'www.df.gov.br',researchDate:'2026-01-01',researchEvidence:'real-'+route.id});A.throws(()=>M.submitPark(team,s,{...f,researchEvidence:''}),/evidência/);A.throws(()=>M.submitPark(team,s,{...f,researchURL:'df.gov.br.evil.com'}),/domínio/)}
