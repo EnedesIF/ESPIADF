@@ -20,7 +20,7 @@ export const territory = base({
 });
 
 export const health = base({
-  id: 'health', number: '04', axis: 'SAÚDE', title: 'SAÚDE NO BAIRRO',
+  id: 'health', number: '04', axis: 'SAÚDE', title: 'SAÚDE NA REGIÃO ADMINISTRATIVA',
   pitch: 'UBS, vacinação, dengue e vigilância sanitária: informação pública para orientar o próximo passo.',
   briefing: 'Os moradores acham que os casos de dengue aumentaram. Um culpa o terreno abandonado, outro a chuva, outro a coleta de lixo. Investigue antes de concluir.'
 });

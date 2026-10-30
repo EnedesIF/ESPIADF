@@ -1,3 +1,5 @@
+import {HEALTH_SCRIPT_UPDATES} from './healthRoutesReview';
+import {WASTE_SCRIPT_UPDATE} from './wasteReview';
 import {COURT_SCRIPT_UPDATE,POLICE_SCRIPT_UPDATE} from './territoryReview';
 import {UBS_SCRIPT_UPDATE} from './healthReview';
 import {MOBILITY_SCRIPT_UPDATES} from './mobilityReview';
@@ -106,3 +108,7 @@ Object.assign(CASE_SCRIPTS.ubs,UBS_SCRIPT_UPDATE);
 Object.assign(CASE_SCRIPTS.court,COURT_SCRIPT_UPDATE);
 
 Object.assign(CASE_SCRIPTS.police,POLICE_SCRIPT_UPDATE);
+
+Object.assign(CASE_SCRIPTS.waste,WASTE_SCRIPT_UPDATE);
+
+for(const [id,update] of Object.entries(HEALTH_SCRIPT_UPDATES))Object.assign(CASE_SCRIPTS[id],update);

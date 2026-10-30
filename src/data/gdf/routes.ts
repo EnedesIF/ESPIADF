@@ -1,3 +1,4 @@
+import {HEALTH_ROUTE_UPDATES} from '../healthRoutesReview';
 import {TERRITORY_ROUTE_UPDATES} from '../territoryReview';
 import {UBS_ROUTE_UPDATE} from '../healthReview';
 import {MOBILITY_ROUTE_UPDATES} from '../mobilityReview';
@@ -27,3 +28,5 @@ export const GDF_STEPS=['Escolher a rota','Examinar informações iniciais','Com
 Object.assign(GDF_ROUTES.find(r=>r.id==='ubs')!,UBS_ROUTE_UPDATE);
 
 for(const [id,update] of Object.entries(TERRITORY_ROUTE_UPDATES))Object.assign(GDF_ROUTES.find(r=>r.id===id)!,update);
+
+for(const [id,update] of Object.entries(HEALTH_ROUTE_UPDATES))Object.assign(GDF_ROUTES.find(r=>r.id===id)!,update);

@@ -49,16 +49,18 @@ export function parkCanAdvance(s:ParkState){const t=parkReview(s);return !!t&&t.
 const long=(fields:Record<string,string>,name:string,label:string)=>{if((fields[name]?.trim().length??0)<20||fields[name].length>6000)throw Error(label+': escreva pelo menos 20 caracteres para continuar (máximo de 6.000).')};
 export function validateParkFields(a:ParkActivity,f:Record<string,string>,s:ParkState,team:Team){
  long(f,'answer','Sua interpretação');
+ if(['vaccination','sanitary'].includes(stateRoute(s).id)){validateReviewedHealthFields(a,f,s);return;}
+ if(stateRoute(s).id==='waste'){validateWasteFields(a,f,s);return;}
  if(stateRoute(s).id==='court'){validateCourtFields(a,f,s,team);return;}
  if(a.kind==='route'&&!(stateRoute(s).id==='park'?['parque','externo']:['principal','alternativa']).includes(f.route))throw Error('Escolha uma rota para investigar.');
  if(a.kind==='agent'&&!s.clue)throw Error('Encontre primeiro a pista na alameda.');
  if(a.kind==='board'){if(!f.evidenceId)throw Error('Capture o quadro ou anexe sua imagem.');if(!s.records.some(r=>r.kind==='agent'))throw Error('Registre a conversa com a agente.');}
- if(a.kind==='source'){if(f.toolOpened!=='sim')throw Error('Abra a fonte indicada pelo GDF antes de registrar a análise.');if(f.source!=='oficial')throw Error('A ferramenta selecionada não responde à pergunta desta etapa. Compare as opções e escolha a fonte pertinente.');if((stateRoute(s).campaign==='mobility'||stateRoute(s).id==='ubs')){f.researchURL=normalizeSourceURL(f.researchURL,true);if(!validResearchDate(f.researchDate))throw Error('Informe a data da consulta à fonte oficial.');if(!f.researchEvidence)throw Error('Adicione uma evidência da consulta real (print ou foto).');if(f.sourceStatus==='unavailable')long(f,'accessIssue','O que aconteceu ao consultar a fonte')}else long(f,'hypothesis','Sua ideia antes da pesquisa');}
+ if(a.kind==='source'){if(f.toolOpened!=='sim')throw Error('Abra a fonte indicada pelo GDF antes de registrar a análise.');if(f.source!=='oficial')throw Error('A ferramenta selecionada não responde à pergunta desta etapa. Compare as opções e escolha a fonte pertinente.');if((stateRoute(s).campaign==='mobility'||['ubs','dengue'].includes(stateRoute(s).id))){f.researchURL=normalizeSourceURL(f.researchURL,true);if(!validResearchDate(f.researchDate))throw Error('Informe a data da consulta à fonte oficial.');if(!f.researchEvidence)throw Error('Adicione uma evidência da consulta real (print ou foto).');if(f.sourceStatus==='unavailable')long(f,'accessIssue','O que aconteceu ao consultar a fonte')}else long(f,'hypothesis','Sua ideia antes da pesquisa');}
  if(a.kind==='solution')long(f,'responsibilities','Responsáveis e ações');
- if(a.kind==='channel'){if(!['consulta','lai','ouvidoria','servico'].includes(f.channel))throw Error('Escolha a ferramenta adequada.');long(f,'draft',f.channel==='consulta'?'Conclusão da consulta':'Texto do encaminhamento');if((stateRoute(s).campaign==='mobility'||stateRoute(s).id==='ubs'))validateExternalParticipation(f);}
+ if(a.kind==='channel'){if(!['consulta','lai','ouvidoria','servico'].includes(f.channel))throw Error('Escolha a ferramenta adequada.');long(f,'draft',f.channel==='consulta'?'Conclusão da consulta':'Texto do encaminhamento');if((stateRoute(s).campaign==='mobility'||['ubs','dengue'].includes(stateRoute(s).id)))validateExternalParticipation(f);}
  if(a.kind==='final'){
   if(activitiesFor(s).slice(0,-1).some(a=>{const t=delivery(s.teamId,stateRoute(s).campaign,taskKeyForActivity(s,a));return !t||t.status==='student_adjust'}))throw Error('Envie as tarefas dos oito passos anteriores e corrija eventuais ajustes solicitados.');
-  if((stateRoute(s).campaign==='mobility'||stateRoute(s).id==='ubs')){
+  if((stateRoute(s).campaign==='mobility'||['ubs','dengue'].includes(stateRoute(s).id))){
    const consolidated=consolidateParkFields(s,team,f);Object.assign(f,consolidated);f.researchURL=normalizeSourceURL(f.researchURL,true);
    if(!validResearchDate(f.researchDate))throw Error('Confira a data da pesquisa registrada no percurso.');
    if(!f.researchEvidence)throw Error('Anexe a evidência da pesquisa real.');long(f,'research','Conclusão da pesquisa');
@@ -118,4 +120,51 @@ function validateCourtFields(a:ParkActivity,f:Record<string,string>,s:ParkState,
 export function consolidateCourtFields(s:ParkState,team:Team,current:Record<string,string>={}){
  const board=s.records.find(r=>r.kind==='board')?.fields??{},verify=s.records.find(r=>r.kind==='verify')?.fields??{},channel=s.records.find(r=>r.kind==='channel')?.fields??{};
  return {researchURL:board.researchURL??'',researchDate:board.researchDate??'',normExcerpt:board.normExcerpt??'',researchEvidence:board.researchEvidence??'',confirmedFacts:board.answer??'',remainingLimits:verify.answer??'',teamWork:team.members.map(m=>m.name+': '+s.records.filter(r=>r.memberId===m.id).map(r=>r.fields.answer).filter(Boolean).join(' ').slice(0,500)).join('\n'),decision:channel.channel??'',proposal:channel.draft??'',externalSent:'nao',...current};
+}
+
+function validateWasteFields(a:ParkActivity,f:Record<string,string>,s:ParkState){
+ if(a.kind==='route'&&!['principal','alternativa'].includes(f.route))throw Error('Escolha por onde começar.');
+ if(a.kind==='agent'&&!s.clue)throw Error('Guarde a pista antes de conversar.');
+ if(a.kind==='board'&&!s.records.some(r=>r.kind==='agent'))throw Error('Registre a conversa com a agente.');
+ if(a.kind==='source'){
+  if(!['oficial','carta'].includes(f.source)||f.toolOpened!=='sim')throw Error('Consulte uma fonte de coleta do SLU.');
+  long(f,'hypothesis','Antes da consulta');f.researchURL=normalizeSourceURL(f.researchURL,true);
+  if(!validResearchDate(f.researchDate))throw Error('Informe a data da consulta.');long(f,'realPlace','Local real pesquisado');
+ }
+ if(a.kind==='solution'){long(f,'missingInformation','Informação pendente e instrumento');long(f,'responsibilities','Responsáveis');}
+ if(a.kind==='channel'){if(!['consulta','lai','ouvidoria'].includes(f.channel))throw Error('Escolha o próximo passo.');long(f,'need','O que ainda falta saber');long(f,'draft','Justificativa e orientação ou minuta');}
+ if(a.kind==='final'){
+  if(activitiesFor(s).slice(0,-1).some(previous=>{const t=delivery(s.teamId,'territory',taskKeyForActivity(s,previous));return !t||t.status==='student_adjust'}))throw Error('Registre as etapas anteriores e corrija os ajustes solicitados.');
+  f.researchURL=normalizeSourceURL(f.researchURL,true);if(!validResearchDate(f.researchDate))throw Error('Confira a data da pesquisa real.');
+  for(const key of ['realPlace','research','remainingLimits','teamWork'])long(f,key,'Registro final');
+  if(!f.researchEvidence)throw Error('Anexe a evidência da pesquisa real.');if(f.confirm!=='sim')throw Error('Confirme a revisão da pesquisa e dos registros.');
+  if(f.externalSent==='sim'){const decision=delivery(s.teamId,'territory',parkTaskKey(7,'waste'));if(decision?.status!=='validated')throw Error('Aguarde a revisão do professor antes de registrar participação externa.');if(!validResearchDate(f.participationDate)||!f.participationEvidence)throw Error('Registre data e comprovante da participação que realmente ocorreu.');}
+ }
+}
+export function consolidateWasteFields(s:ParkState,current:Record<string,string>={}){
+ const source=s.records.find(r=>r.kind==='source')?.fields??{},channel=s.records.find(r=>r.kind==='channel')?.fields??{};
+ return {researchURL:source.researchURL??'',researchDate:source.researchDate??'',realPlace:source.realPlace??'',research:source.answer??'',researchEvidence:source.researchEvidence??'',realChannel:channel.channel??'',participation:channel.draft??'',externalSent:'nao',...current};
+}
+
+function validateReviewedHealthFields(a:ParkActivity,f:Record<string,string>,s:ParkState){
+ if(a.kind==='route'&&f.route!=='principal')throw Error('Siga o percurso principal da investigação.');
+ if(a.kind==='agent'&&!s.clue)throw Error('Guarde a pista antes da conversa.');
+ if(a.kind==='board'&&!s.records.some(r=>r.kind==='agent'))throw Error('Registre a conversa da equipe antes de analisar o documento fictício.');
+ if(a.kind==='source'){
+  if(f.source!=='oficial'||f.toolOpened!=='sim')throw Error('Abra a fonte oficial de saúde antes de registrar a descoberta.');
+  f.researchURL=normalizeSourceURL(f.researchURL,true);if(!validResearchDate(f.researchDate))throw Error('Registre a data da consulta real.');
+  if((f.sourceName?.trim().length??0)<3)throw Error('Informe o nome da página ou documento consultado.');
+ }
+ if(a.kind==='solution')long(f,'nextStep','Próximo passo e informação a verificar');
+ if(a.kind==='channel'){if(!['consulta','lai','ouvidoria',...(stateRoute(s).id==='vaccination'?['servico']:[])].includes(f.channel))throw Error('Escolha o encaminhamento pertinente.');long(f,'draft','Conclusão ou rascunho para o professor');}
+ if(a.kind==='final'){
+  if(activitiesFor(s).slice(0,-1).some(previous=>{const t=delivery(s.teamId,'health',taskKeyForActivity(s,previous));return !t||t.status==='student_adjust'}))throw Error('Envie os registros anteriores e corrija os ajustes solicitados.');
+  f.researchURL=normalizeSourceURL(f.researchURL,true);if(!validResearchDate(f.researchDate))throw Error('Confira a data da pesquisa real.');if((f.sourceName?.trim().length??0)<3)throw Error('Confira o nome da fonte.');
+  long(f,'research','Informação encontrada');long(f,'verification','Verificação e limites');if(stateRoute(s).id==='sanitary')long(f,'participation','Canal adequado e justificativa');
+  if(f.confirm!=='sim')throw Error('Confirme a conferência da pesquisa pública e da conclusão.');
+ }
+}
+export function consolidateHealthFields(s:ParkState,current:Record<string,string>={}){
+ const source=s.records.find(r=>r.kind==='source')?.fields??{},verify=s.records.find(r=>r.kind==='verify')?.fields??{},channel=s.records.find(r=>r.kind==='channel')?.fields??{};
+ return {sourceName:source.sourceName??'',researchURL:source.researchURL??'',researchDate:source.researchDate??'',research:source.answer??'',researchEvidence:source.researchEvidence??'',verification:verify.answer??'',realChannel:channel.channel??'',participation:channel.draft??'',...current};
 }

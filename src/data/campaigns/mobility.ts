@@ -78,7 +78,7 @@ export const mobility: CampaignDef = {
       summary: 'Placa na via principal: "OBRA — DESVIO DE LINHAS PELA VIA DA QUADRA 300". Sem data de término.',
       supports: ['h_desvio'] },
     { id: 'e_passagem', kind: 'campo', title: 'Passagem de pedestres interditada', source: 'Registro com a câmera',
-      summary: 'A travessia a pé entre o bairro e a área central está fechada pela obra.', supports: ['h_desvio'] },
+      summary: 'A travessia a pé entre a Região Administrativa e a área central está fechada pela obra.', supports: ['h_desvio'] },
     { id: 'e_quadro', kind: 'campo', title: 'Itinerário afixado desatualizado', source: 'Registro com a câmera',
       summary: 'O quadro da parada do Centro de Ensino mostra o trajeto antigo, sem o desvio.', supports: ['h_desvio'] },
     { id: 'e_poste', kind: 'campo', title: 'Poste apagado na rua da Quadra 214', source: 'Registro com a câmera',

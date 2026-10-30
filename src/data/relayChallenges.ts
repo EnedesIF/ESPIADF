@@ -11,7 +11,7 @@ export function routeActivities(route:GdfRoute,park:ParkActivity[]):ParkActivity
  const script=caseScript(route),experience=routeExperience(route);
  return park.map(a=>{
   const place=script.places[a.kind as keyof typeof script.places]??a.place;
-  const titles:Record<string,string>={route:(route.id==='transport'?'Planejar o trajeto':'Conhecer o problema')+' • '+route.title,agent:'Ouvir orientação • '+route.title,board:'Abrir • '+CASE_OBJECTS[route.id],compare:'Ouvir • '+experience.witness,source:script.sourceTitle,verify:'Conferir a descoberta • '+route.title,solution:'Montar nosso plano • '+route.title,channel:'Preparar o próximo passo • '+route.title,response:'Ler o retorno • '+route.title,final:'Apresentar a descoberta • '+route.title};
+  const titles:Record<string,string>={route:(route.id==='transport'?'Planejar o trajeto':'Conhecer o problema')+' • '+route.title,agent:'Ouvir orientação • '+route.title,board:'Abrir • '+CASE_OBJECTS[route.id],compare:'Ouvir • '+experience.witness,source:script.sourceTitle,verify:'Conferir a descoberta • '+route.title,solution:'Montar nosso plano • '+route.title,channel:'Preparar o próximo passo • '+route.title,response:(route.campaign==='health'?'Avaliar a orientação • ':'Ler o retorno • ')+route.title,final:'Apresentar a descoberta • '+route.title};
   return {...a,place,step:route.id==='court'?COURT_STEP_BY_KIND[a.kind]:a.step,title:route.id==='court'?COURT_TASK_TITLES[a.kind]:titles[a.kind],prompt:script.questions[QUESTION_INDEX[a.kind]],...(a.kind==='agent'?{speech:script.agent}:a.kind==='compare'?{speech:route.other}:a.kind==='verify'?{speech:script.verify}:{})};
  });
 }

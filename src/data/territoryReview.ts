@@ -1,9 +1,11 @@
+import {WASTE_ROUTE_UPDATE} from './wasteReview';
 import {COURT_ROUTE_UPDATE} from './courtRights';
 export {COURT_SCRIPT_UPDATE,COURT_TASK_TITLES} from './courtRights';
 import type {GdfRoute} from './gdf/routes';
 import type {CaseScript} from './caseScripts';
 export const TERRITORY_ROUTE_UPDATES:Record<string,Partial<GdfRoute>>={
  court:COURT_ROUTE_UPDATE,
+ waste:WASTE_ROUTE_UPDATE,
  police:{title:'Segurança e abordagem',question:'Como podemos acessar dados públicos sobre as abordagens policiais na nossa região?',source:'Dados Abertos DF • Relatórios mensais de produtividade da PMDF',url:'https://www.dados.df.gov.br/dataset/relatorios-mensais-de-produtividade-de-2026-pmdf',initial:'A comunidade quer entender o que os dados públicos mostram sobre as abordagens policiais na nossa região. A equipe vai pesquisar os relatórios e verificar quais informações estão disponíveis.',search:'Procurem um relatório mensal e confiram se há informação sobre abordagens, com definição, período e abrangência regional. Registrem somente o que estiver publicado.',limit:'Dados de produtividade não representam todas as ocorrências nem uma situação em tempo real. Se não houver recorte de abordagens ou da região, reconheçam essa lacuna; não inventem números.',other:'Vi uma publicação com números de atuação policial e achei que ela explicava todas as abordagens da nossa região. Como podemos conferir o que os dados realmente mostram?'}
 };
 export const POLICE_SCRIPT_UPDATE:Partial<CaseScript>={

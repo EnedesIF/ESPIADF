@@ -1,0 +1,27 @@
+ESPIA DF — Saúde, nova abertura e avatares — 30/10/2026
+
+ATUALIZAÇÃO CUMULATIVA. Inclui as revisões anteriores de lixo/coleta, quadra, território, UBS e cenário 1 contidas nos pacotes anteriores. Não é o repositório completo: mantenha os demais arquivos do projeto.
+
+COMO PUBLICAR
+1. Extraia este ZIP.
+2. Envie os arquivos extraídos para a raiz de EnedesIF/ESPIADF, mantendo os caminhos das pastas.
+3. Substitua os arquivos correspondentes, incluindo package.json e public/art/espia-opening-gdf-v32.webp. Não envie apenas o ZIP fechado e não apague o repositório.
+4. Confirme o commit e aguarde o deploy automático da Vercel concluir.
+5. Teste o site publicado. Este pacote ainda não foi enviado ao GitHub automaticamente.
+
+INCLUÍDO
+- Nome Saúde na Região Administrativa nas interfaces.
+- Revisão tela a tela de Vacinação e Vigilância Sanitária conforme os dois PDFs de 30/10.
+- Ajustes gerais nas quatro rotas de saúde, com pesquisa integrada, conceitos e consolidação.
+- Aviso fictício visual, fonte real, data, interpretação, campos condicionais e conclusão sem envio externo obrigatório.
+- Contraste dos expansíveis, incluindo Ver minha resposta.
+- Abertura com referências a Buriti, Torre de TV, Mané Garrincha e Parque da Cidade, no mesmo estilo. Não recria todas as imagens de cenário.
+- Movimento dos avatares com silhueta completa, evitando cortes e fragmentos. A caminhada usa balanço discreto do corpo inteiro, preservando corrida, salto e comemoração.
+
+VERIFICAÇÃO
+Suíte automática dos 15 casos, testes específicos de saúde, personalização dos 18 modelos, build e 600 formulários em quatro tamanhos. Não equivale a todas as partidas jogadas manualmente.
+As páginas da SES foram conferidas por pesquisa em fontes oficiais. Alguns acessos HTTP deram 503 e o navegador remoto teve timeout em vacinação; não foi possível confirmar todos os links nesse navegador. Registre lacunas sem inventar informações e revalide os destinos no ambiente dos estudantes.
+
+LIMITES
+Progresso e entregas ainda usam armazenamento local. A sincronização pelo Supabase entre dispositivos continua pendente. Não executa SQL remoto e não envia pedidos a órgãos públicos.
+Detalhamento: docs/REVISAO_GDF_SAUDE_30_OUTUBRO.md.

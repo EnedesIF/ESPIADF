@@ -37,3 +37,13 @@
 .studio-gender .chip[aria-pressed=true]{background:#27dfa3;color:#083b38;border-color:#a8ffdb}
 /* A hat and headphones occupy the same crown: keep headphones behind the hat. */
 .avatar-gear.gear-slot-ears{z-index:7}
+
+/* Keep each authored silhouette intact. Walking never swaps in clipped body pieces.
+   One full front/rear cell carries the pose and all recolours/accessories together. */
+.team-cartoon-avatar.avatar-continuous .team-cartoon-sprite{display:block!important;animation:none!important;background-size:300% 200%!important;background-position:var(--look-x) var(--look-y)!important}
+.avatar-continuous .rear-complete{position:absolute;inset:0;background:var(--rear-art) var(--look-x) var(--look-y)/300% 200% no-repeat}
+.walking:not(.action-jump):not(.action-cheer)>.avatar-continuous,.studio-preview-stage.walking>.avatar-continuous{animation:wholeAvatarStride .64s ease-in-out infinite;transform-origin:50% 97%}
+.is-running .walking:not(.action-jump):not(.action-cheer)>.avatar-continuous,.fast-walk .walking>.avatar-continuous{animation-duration:.4s}
+@keyframes wholeAvatarStride{0%,100%{translate:0 0;rotate:-.8deg}25%{translate:0 -.7%;rotate:0deg}50%{translate:0 0;rotate:.8deg}75%{translate:0 -.7%;rotate:0deg}}
+@media(prefers-reduced-motion:reduce){.walking>.avatar-continuous,.studio-preview-stage.walking>.avatar-continuous{animation:none!important}}
+.reduce-motion .walking>.avatar-continuous,.reduce-motion .studio-preview-stage.walking>.avatar-continuous{animation:none!important}

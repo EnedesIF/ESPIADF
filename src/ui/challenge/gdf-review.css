@@ -14,3 +14,12 @@
 
 .pilot-dialog .task-card{background:#f6fbf4;color:#173e43;border:1px solid #9dbcb1;border-radius:12px;padding:14px}
 .pilot-dialog .task-card p,.pilot-dialog .task-card h3,.pilot-dialog .task-card dt,.pilot-dialog .task-card dd{color:#173e43;white-space:pre-wrap;overflow-wrap:anywhere}
+/* Expandable student records remain visibly interactive on the light panels. */
+.park-challenge .pilot-dialog summary,.gdf-integrated-records summary{display:list-item;cursor:pointer;background:#164f50;color:#fff7d5;border:2px solid #35796e;border-radius:9px;padding:12px 15px;font-weight:750;line-height:1.4;min-height:44px;box-sizing:border-box}
+.park-challenge .pilot-dialog details[open]>summary,.gdf-integrated-records details[open]>summary{background:#0a3b3d;border-color:#e1be65}
+.park-challenge .pilot-dialog summary:focus-visible,.gdf-integrated-records summary:focus-visible{outline:3px solid #c18000;outline-offset:3px}
+.park-challenge .pilot-dialog summary::marker{color:#ffe49a}
+.health-fiction-document{background:#fffbea;color:#193e42;border:2px solid #8e793f;border-radius:12px;padding:18px;margin:14px 0}
+.health-fiction-document>b{display:block;font-size:.78rem;background:#795b16;color:#fff;padding:7px 10px;border-radius:6px;margin-bottom:14px}
+.health-fiction-document pre{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;margin:0}
+.high-contrast .park-challenge .pilot-dialog summary{background:#000;color:#fff;border-color:#fff}

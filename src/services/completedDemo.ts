@@ -27,7 +27,7 @@ export async function completedDemo(routeId='park'){const route=relayRoute(route
  s.finished=true;s.clue=true;s.visited=['square','alameda','park','lab'];s.discoveredClues=Array.from({length:9},(_,i)=>'step:'+(i+1));savePark(s);return team;
 }
 
-function exampleAnswer(routeId:string,kind:string){const r=relayRoute(routeId);const answers:Record<string,string>={
+function exampleAnswer(routeId:string,kind:string){const r=relayRoute(routeId);if(routeId==='waste'&&kind==='response')return 'EXEMPLO FICTÍCIO: o retorno orienta consultar o cronograma, mas não informa os dias do local nem comprova passagem de caminhão. A equipe ainda precisa pesquisar a referência territorial escolhida.';const answers:Record<string,string>={
  route:'A equipe escolheu investigar: '+r.question+' Vamos registrar as evidências, comparar perspectivas e consultar '+r.source+'.',
  agent:'A agente orientou: '+r.initial+' A equipe precisa verificar: '+r.search,
  board:'Examinamos o registro do cenário: '+r.facts.join(' ')+' Nossa interpretação respeita este limite: '+r.limit,
