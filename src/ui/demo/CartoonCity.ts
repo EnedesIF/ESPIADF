@@ -1,3 +1,4 @@
+import {avatarName} from '@/services/avatarNames';
 import {walkable,ACCESS,CROSSING_NORTH,CROSSING_SOUTH,enteringCrossing,pedestrianWindow,onStairs} from './WalkableCity';
 import {audio} from '@/systems/AudioSystem';
 import {NPC_FEET} from './SceneSpacing';
@@ -121,9 +122,9 @@ this.world.append(h('div',{class:'cartoon-scenery','aria-hidden':'true'}),h('div
   members.forEach((member,i)=>{
    const look=cartoonLook(member.avatar.cartoonLook,i),art=cartoonAvatar(look,'',member.avatar),routine=new CityResident(i,look);
    routine.extended=true;routine.walker.zone=this.id==='mobility'?routine.zone:this.id;routine.walker.allow=(from,to)=>this.safeStep(from,to);
-   const node=h('button',{class:'squad-companion activity-'+look,'aria-label':member.name+' • '+ACTIVITY_LABELS[look],onclick:()=>choose(member.id)},h('span',{class:'cartoon-hero-shadow'}),art,h('span',{class:'squad-name'},member.name.split(' ')[0]));
-   const status=h('small',{},'Explorando o bairro');
-   const card=h('button',{class:'squad-member',onclick:()=>choose(member.id),'aria-label':'Ver tarefas e localização de '+member.name},cartoonAvatar(look),h('span',{},member.name.split(' ')[0]),status);
+   const node=h('button',{class:'squad-companion activity-'+look,'aria-label':avatarName(member)+' • '+ACTIVITY_LABELS[look],onclick:()=>choose(member.id)},h('span',{class:'cartoon-hero-shadow'}),art,h('span',{class:'squad-name'},avatarName(member)));
+   const status=h('small',{},'Explorando a Região Administrativa');
+   const card=h('button',{class:'squad-member',onclick:()=>choose(member.id),'aria-label':'Ver tarefas e localização de '+avatarName(member)},cartoonAvatar(look,'',member.avatar),h('span',{},avatarName(member)),status);
    node.hidden=true;this.world.append(node);roster.append(card);this.squad.push({member,node,walker:routine.walker,routine,card,status,shown:false});
   });this.root.append(roster);
  }
@@ -187,10 +188,10 @@ this.world.append(h('div',{class:'cartoon-scenery','aria-hidden':'true'}),h('div
    const show=false; // Relay: waiting teammates remain in the roster, not in the scene.
    s.node.hidden=!show;s.shown=show;s.node.classList.toggle('resident-near',near&&!s.walker.moving);s.node.style.setProperty('--look-turn',this.walker.position[0]<s.walker.position[0]?'-2deg':'2deg');
 
-   if(show&&s.routine.encounter(this.walker.position)){audio.play('message');this.hero.classList.remove('found-person');void this.hero.offsetWidth;this.hero.classList.add('found-person');this.encounterNote.textContent='Você encontrou '+s.member.name.split(' ')[0]+' • '+ACTIVITY_LABELS[s.routine.activity].toLowerCase();this.noteAge=4}
+   if(show&&s.routine.encounter(this.walker.position)){audio.play('message');this.hero.classList.remove('found-person');void this.hero.offsetWidth;this.hero.classList.add('found-person');this.encounterNote.textContent='Você encontrou '+avatarName(s.member)+' • '+ACTIVITY_LABELS[s.routine.activity].toLowerCase();this.noteAge=4}
    s.card.classList.toggle('active',selected);s.card.setAttribute('aria-pressed',String(selected));s.status.textContent=selected?'Responsável atual':'Aguardando sua vez';
    const [x,y]=s.walker.position;s.node.style.left=x+'%';s.node.style.top=y+'%';s.node.style.zIndex=String(Math.round(y));s.node.setAttribute('data-facing',s.walker.facing);s.node.style.setProperty('--actor-scale',String(groundScale(y)));s.node.classList.toggle('walking',s.walker.moving);s.node.classList.toggle('facing-left',s.walker.facingLeft);s.node.classList.toggle('activity-pose',!s.walker.moving);
-   if(selected&&this.currentMember!==controller){this.currentMember=controller;this.hero.hidden=false;this.heroArt?.remove();this.heroArt=cartoonAvatar(cartoonLook(s.member.avatar.cartoonLook,i),'',s.member.avatar);this.hero.append(this.heroArt);this.heroName.textContent=s.member.name.split(' ')[0]+' • NO CONTROLE'}
+   if(selected&&this.currentMember!==controller){this.currentMember=controller;this.hero.hidden=false;this.heroArt?.remove();this.heroArt=cartoonAvatar(cartoonLook(s.member.avatar.cartoonLook,i),'',s.member.avatar);this.hero.append(this.heroArt);this.heroName.textContent=avatarName(s.member)+' • NO CONTROLE'}
   }
 
   const [px,py]=this.walker.position;

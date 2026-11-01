@@ -7,7 +7,7 @@ export const DISTRICTS:Record<CampaignId,{name:string;subtitle:string;color:stri
  mobility:{name:'TERMINAL 214',subtitle:'Linhas, paradas e caminhos pela cidade',color:'#2fe3a1',icon:'bus'},
  work:{name:'CAMPUS DE OPORTUNIDADES',subtitle:'Escola, formação e entrada no trabalho',color:'#ffc15b',icon:'building'},
  territory:{name:'PRAÇA DAS CONEXÕES',subtitle:'Convivência, lazer e cuidado ambiental',color:'#91e17b',icon:'leaf'},
- health:{name:'BAIRRO JARDIM HORIZONTE',subtitle:'UBS, prevenção e cuidado coletivo',color:'#6bcce6',icon:'pulse'}
+ health:{name:'REGIÃO ADMINISTRATIVA',subtitle:'UBS, prevenção e cuidado coletivo',color:'#6bcce6',icon:'pulse'}
 };
 /** Distritos temáticos em 3D; cada missão ocupa um setor com objetos próprios. */
 export function buildCityDistrict(world:CityWorld,id:CampaignId){
@@ -43,7 +43,7 @@ export function buildCityDistrict(world:CityWorld,id:CampaignId){
   box(38,2.1,46,.15,4.2,.15,'#d6e1db');box(38,3.8,45.8,2.4,1.3,.15,'#e5eee7');const hoop=mesh(new THREE.TorusGeometry(.45,.045,8,20),'#d77b35',38,3.4,45.2);hoop.rotation.x=Math.PI/2;
   sign(77,28,'CONVIVÊNCIA EM REDE','CUIDADO / LAZER / PARTICIPAÇÃO',5);
  }else{
-  sign(106,17,'BAIRRO JARDIM HORIZONTE','SAÚDE E PREVENÇÃO',8);shelter(96,22,'#4f9ba4');box(96,.9,22,3,.15,1.2,'#d3e3dc');collider(96,22,3,1.2);
+  sign(106,17,'REGIÃO ADMINISTRATIVA','SAÚDE E PREVENÇÃO',8);shelter(96,22,'#4f9ba4');box(96,.9,22,3,.15,1.2,'#d3e3dc');collider(96,22,3,1.2);
   ground(110,26,23,2,'#c8d8c5');sign(110,32,'UBS / ORIENTAÇÃO','DADOS / AÇÕES / CUIDADO',6);
   for(const z of [25,42]){box(133,2,z,7,4,7,'#ded3bd');box(133,4.2,z,7.6,.35,7.6,'#9e6547');box(132,1.3,z-3.55,1,2.6,.1,'#2e7a83');box(135,2,z-3.55,1.2,1.2,.12,'#7eb0bc');collider(133,z,7,7)}
   shelter(118,16,'#4f9ba4');box(118,.9,16,3,.2,1,'#d3e3dc');sign(121,16,'CUIDADO COLETIVO','ORIENTAÇÃO / PREVENÇÃO',4);

@@ -1,3 +1,4 @@
+import {avatarName} from './avatarNames';
 import {COURT_STEPS} from '@/data/courtRights';
 import {relayRoute,routeActivities} from '@/data/relayChallenges';
 import {GDF_ROUTES} from '@/data/gdf/routes';
@@ -81,7 +82,7 @@ export function validateParkFields(a:ParkActivity,f:Record<string,string>,s:Park
 export function submitPark(team:Team,s:ParkState,fields:Record<string,string>,index=s.index){if(!Number.isInteger(index)||index<0||index>s.index)throw Error('Tarefa indisponível.');const context={...s,index},previous=parkReview(context);if(!s.started||(s.finished&&previous?.status!=='student_adjust'))throw Error('Desafio indisponível.');const a=activitiesFor(s)[index],member=team.members.find(m=>m.id===s.assignments[a.role]);if(!member)throw Error('Responsável não encontrado.');validateParkFields(a,fields,context,team);const d=parkReview(context);if(d&&d.status!=='student_adjust')throw Error('Aguarde a avaliação e a confirmação do GDF.');
  const record:ParkRecord={kind:a.kind,memberId:member.id,memberName:member.name,at:Date.now(),fields:{...fields}};
  let task:TaskDelivery|undefined;
- task=submitTask(team,stateRoute(s).campaign,activityTaskKey(context),'Desafio '+challengeFor(stateRoute(s).campaign).number+' • '+stateRoute(s).title+' • Etapa '+a.step+'/9 • '+stepsFor(s)[a.step-1],member.id,JSON.stringify({tarefa:a.title,participante:member.name,respostas:fields,historico:[...s.records.filter(r=>r.kind!==a.kind),record].map(({kind,memberId,memberName,at})=>({kind,memberId,memberName,at})),evidenceId:fields.evidenceId,evidenceIds:[fields.researchEvidence,fields.participationEvidence].filter(Boolean),reuniao:s.discussion},null,2));
+ task=submitTask(team,stateRoute(s).campaign,activityTaskKey(context),'Desafio '+challengeFor(stateRoute(s).campaign).number+' • '+stateRoute(s).title+' • Etapa '+a.step+'/9 • '+stepsFor(s)[a.step-1],member.id,JSON.stringify({tarefa:a.title,participante:member.name,personagem:avatarName(member),respostas:fields,historico:[...s.records.filter(r=>r.kind!==a.kind),record].map(({kind,memberId,memberName,at})=>({kind,memberId,memberName,at})),evidenceId:fields.evidenceId,evidenceIds:[fields.researchEvidence,fields.participationEvidence].filter(Boolean),reuniao:s.discussion},null,2));
  s.records=[...s.records.filter(r=>r.kind!==a.kind),record];s.drafts[a.kind]={...fields};if(a.kind==='source'&&!s.rewards.includes('source'))s.rewards.push('source');savePark(s);return task;
 }
 export function advancePark(s:ParkState){if(!parkCanAdvance(s))throw Error('Envie a tarefa e corrija ajustes solicitados antes de continuar. Aguarde apenas o registro do envio.');if(s.index===PARK_ACTIVITIES.length-1){s.finished=true}else{s.index++}savePark(s)}
@@ -119,7 +120,7 @@ function validateCourtFields(a:ParkActivity,f:Record<string,string>,s:ParkState,
 }
 export function consolidateCourtFields(s:ParkState,team:Team,current:Record<string,string>={}){
  const board=s.records.find(r=>r.kind==='board')?.fields??{},verify=s.records.find(r=>r.kind==='verify')?.fields??{},channel=s.records.find(r=>r.kind==='channel')?.fields??{};
- return {researchURL:board.researchURL??'',researchDate:board.researchDate??'',normExcerpt:board.normExcerpt??'',researchEvidence:board.researchEvidence??'',confirmedFacts:board.answer??'',remainingLimits:verify.answer??'',teamWork:team.members.map(m=>m.name+': '+s.records.filter(r=>r.memberId===m.id).map(r=>r.fields.answer).filter(Boolean).join(' ').slice(0,500)).join('\n'),decision:channel.channel??'',proposal:channel.draft??'',externalSent:'nao',...current};
+ return {researchURL:board.researchURL??'',researchDate:board.researchDate??'',normExcerpt:board.normExcerpt??'',researchEvidence:board.researchEvidence??'',confirmedFacts:board.answer??'',remainingLimits:verify.answer??'',teamWork:team.members.map(m=>avatarName(m)+': '+s.records.filter(r=>r.memberId===m.id).map(r=>r.fields.answer).filter(Boolean).join(' ').slice(0,500)).join('\n'),decision:channel.channel??'',proposal:channel.draft??'',externalSent:'nao',...current};
 }
 
 function validateWasteFields(a:ParkActivity,f:Record<string,string>,s:ParkState){

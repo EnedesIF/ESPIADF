@@ -1,7 +1,7 @@
 import {ACCESS} from './WalkableCity';
 import {GroundWalker,type GroundPoint,GROUND_ANCHORS} from './CartoonGround';
 export const RESIDENT_SPOTS:GroundPoint[]=[[14,74],[40,72],[57,80],[73,74],[53,74],[70,79],[20,82],[45,84],[82,82],[61,85]];
-export const ACTIVITY_LABELS=['Sentado no banco','Consultando o mapa','Circulando pelo bairro','Pesquisando no celular','Lendo no banco','Observando a cidade'];
+export const ACTIVITY_LABELS=['Sentado no banco','Consultando o mapa','Circulando pela Região Administrativa','Pesquisando no celular','Lendo no banco','Observando a cidade'];
 /** Independent schedules, never retargeted when the controlled character moves. */
 export class CityResident{
  readonly walker=new GroundWalker();

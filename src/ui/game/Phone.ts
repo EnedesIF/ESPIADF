@@ -118,7 +118,7 @@ export class Phone {
     this.body.append(h('div', { class: 'apps-sec' }, 'DESLOCAMENTO RÁPIDO'));
     if (!can) this.body.append(h('div', { class: 'empty' }, 'Liberado depois que você chegar ao Centro de Ensino. Por enquanto: a pé — ou de ônibus.'));
     else FAST_TRAVEL.forEach(f => this.body.append(h('button', { class: 'list-item', onclick: () => { g.fastTravel(f.id); this.close(); } },
-      h('b', {}, f.name), h('small', {}, f.side === 'west' ? 'Bairro — Quadra 214' : 'Área central'))));
+      h('b', {}, f.name), h('small', {}, f.side === 'west' ? 'Região Administrativa — Quadra 214' : 'Área central'))));
   }
 
   minimap(full = false) {

@@ -1,4 +1,4 @@
-import {avatarIdentity} from '@/services/avatarNames';
+import {participantIdentity as avatarIdentity} from '@/services/avatarNames';
 import {h,clear} from '../dom';
 import {backend} from '@/services/backend';
 import type {Team,CampaignId} from '@/types';

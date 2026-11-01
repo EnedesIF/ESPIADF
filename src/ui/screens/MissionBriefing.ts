@@ -21,7 +21,7 @@ const META: Record<CampaignId, { code: string; location: string; risk: string; k
     unknown: ['Quem gere o espaço?', 'Qual problema é verificável?', 'Que solução atende mais de um grupo?']
   },
   health: {
-    code: 'OP-04 / ALERTA NO BAIRRO', location: 'REGIÃO DO DF', risk: 'SAÚDE PÚBLICA',
+    code: 'OP-04 / ALERTA NA REGIÃO ADMINISTRATIVA', location: 'REGIÃO DO DF', risk: 'SAÚDE PÚBLICA',
     known: ['Moradores relatam preocupação com dengue.', 'Circulam explicações diferentes para o cenário.', 'Existem dados e orientações oficiais.'],
     unknown: ['Os casos realmente aumentaram?', 'Quais fatores aparecem nas evidências?', 'Que ação pública está prevista?']
   }

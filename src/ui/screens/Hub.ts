@@ -1,3 +1,4 @@
+import {avatarName} from '@/services/avatarNames';
 import {pendingGDFTopics} from '@/services/learning';
 import {selectedRoute} from '@/services/gdfRoutes';
 import {storyStep} from '@/services/demoJourney';
@@ -57,7 +58,7 @@ export function renderHub(app: App) {
         h('div', { class: 'row' }, h('div', { class: 'eyebrow' }, 'EQUIPE'), h('span', { class: 'spacer' }), h('span', { class: 'mono muted', style: { fontSize: '.7rem' } }, team.login)),
         h('div', { style: { fontFamily: 'var(--display)', fontSize: '1.4rem', fontWeight: 700, margin: '6px 0 4px' } }, team.name),
         h('div', { class: 'muted', style: { fontSize: '.82rem', marginBottom: '8px' } }, `${team.school} · ${team.ra || '—'} · Mentor: ${team.mentor.name}`),
-        team.members.map(m => h('div', { class: 'm' }, h('span', { class: 'dot' }), m.name, h('span', { class: 'role' }, roleById(m.role).short))),
+        team.members.map(m => h('div', { class: 'm' }, h('span', { class: 'dot' }), avatarName(m), h('span', { class: 'role' }, roleById(m.role).short))),
         h('div', { class: 'row', style: { marginTop: '12px' } },
           h('button', { class: 'btn ghost sm', onclick: () => app.showAvatar('hub') }, 'Avatares'),
           h('button', { class: 'btn ghost sm', onclick: openSettings }, 'Acessibilidade'))));
