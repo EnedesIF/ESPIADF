@@ -11,10 +11,10 @@ export async function initBackend(): Promise<Repository> {
   if (SUPABASE.url && SUPABASE.anonKey) {
     try {
       const { createClient } = await import('@supabase/supabase-js');
-      const { SupabaseRepository } = await import('./supabaseRepository');
-      repo = new SupabaseRepository(createClient(SUPABASE.url, SUPABASE.anonKey));
+      const { RegistrationRepository } = await import('./registrationRepository');
+      repo = new RegistrationRepository(createClient(SUPABASE.url, SUPABASE.anonKey));
     } catch (e) {
-      console.warn('[MISSÃO DF] Falha ao iniciar Supabase — usando modo local.', e);
+      throw new Error('Não foi possível iniciar a conexão com o banco. O cadastro real está indisponível.');
     }
   }
   return repo;

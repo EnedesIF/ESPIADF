@@ -1,0 +1,3 @@
+// Public API configuration for ESPIADF. This is NOT a service_role key.
+export const ESPIA_SUPABASE_URL='https://aiojzbfhncsgwguykrvq.supabase.co';
+export const ESPIA_SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpb2p6YmZobmNzZ3dndXlrcnZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMTQ5MDAsImV4cCI6MjEwODc5MDkwMH0.K72HwnOluB6MlQ4Qb2lk3qMUn68wOj2tc_YOuVeSDic';

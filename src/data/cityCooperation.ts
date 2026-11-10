@@ -46,5 +46,5 @@ export const STAGE_TASKS:Record<CityStage,{action:string;delivery:string}>={
 /** Legacy teams receive a stable mapping from their registration roles, never per campaign. */
 export function registrationAssignments(members:import('@/types').Member[]){
  const legacy:Record<string,TeamRole>={campo:'campo',mapeador:'campo',dados:'dados',pesquisador:'dados',comunicador:'escuta',articulador:'participacao',relator:'articulacao',estrategista:'verificacao'};
- const result:Record<string,string>={};for(const [i,r] of Object.keys(TEAM_ROLES).entries()){const owner=members.find(m=>m.missionRole===r)??members.find(m=>!m.missionRole&&legacy[m.role]===r)??members[i%members.length];result[r]=owner.id}return result;
+ const result:Record<string,string>={};for(const [i,r] of Object.keys(TEAM_ROLES).entries()){const owner=members.find(m=>m.missionRole===r)??members.find(m=>!m.missionRole&&legacy[m.role]===r)??(members.length===5?members[0]:members[i%members.length]);result[r]=owner.id}return result;
 }
