@@ -1,0 +1,14 @@
+{
+  "routes": [
+    "lighting",
+    "pay",
+    "waste",
+    "dengue"
+  ],
+  "teamId": "qa-play-mwattzi2",
+  "responsesPerRoute": 10,
+  "completedRoutes": 4,
+  "privateImages": 4,
+  "revisionPerRoute": 20,
+  "verification": "Authenticated API + independent new login; SQL readback; offline/conflict unit tests; grading/forum rollback assertions."
+}

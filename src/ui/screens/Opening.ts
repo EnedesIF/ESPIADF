@@ -23,10 +23,10 @@ export function renderOpening(app: App) {
       h('button', { class: 'btn block', type: 'submit' }, 'Entrar na missão'),
       h('button', { class: 'linkbtn', type: 'button', onclick: () => { m.close(); app.showSetup(); } }, 'Ainda não tem equipe? O professor cadastra aqui.'),h('button',{class:'btn ghost',type:'button',onclick:()=>{m.close();app.showMentor()}},'Sou professor • acompanhar equipes'));
     form.onsubmit = async e => {
-      e.preventDefault(); err.textContent = '';
+      e.preventDefault(); err.textContent = 'Recuperando equipe e progresso…';try{
       const t = await backend().loginTeam(login.value, pass.value);
       if (!t) { err.textContent = 'Login ou senha não conferem.'; return; }
-      app.setTeam(t); m.close(); app.enterTeam();
+      app.setTeam(t); m.close(); app.enterTeam();}catch(e){err.textContent=(e as Error).message;}
     };
     const m = modal(form);
   };
@@ -34,7 +34,7 @@ export function renderOpening(app: App) {
   const demo = async () => {
     void audio.activate(true);
     const body=h('div',{class:'panel modal'},h('h2',{},'Como deseja explorar a demo?'),h('p',{},'Veja o desafio inteiro pronto ou jogue o percurso desde o início.'));
-    const box=modal(body);body.append(h('button',{class:'btn',onclick:()=>{box.close();void app.showCompletedDemo()}},'Ver desafio concluído • 9 etapas e 6 personagens'),h('button',{class:'btn ghost',onclick:async()=>{box.close();const t=await createDemoTeam();app.setTeam(t);await app.showPilot('mobility')}},'Jogar o percurso na cidade'));
+    const box=modal(body);body.append(h('button',{class:'btn',onclick:()=>{box.close();void app.showCompletedDemo()}},'Ver desafio concluído • 9 etapas e 6 personagens'),h('button',{class:'btn ghost',onclick:async()=>{box.close();const t=await createDemoTeam();app.setTeam(t);await app.showPilot()}},'Jogar o percurso na cidade'));
 
   };
 

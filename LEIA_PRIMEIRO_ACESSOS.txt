@@ -1,0 +1,24 @@
+ESPIA DF — ACESSOS E PERCURSOS UNIFICADOS
+
+Este pacote acumula a implementação de partidas reais do pacote anterior.
+Extraia o ZIP e substitua src NOS MESMOS CAMINHOS NA RAIZ do GitHub.
+Não suba uma pasta externa nem o ZIP. Faça o commit e aguarde o deploy.
+O banco já está preparado; não execute SQL novamente.
+
+Demo jogável, equipe nova e equipe já cadastrada usam o mesmo seletor,
+os mesmos casos, cenários, pistas e definições de atividade. Os exemplos
+concluídos continuam fictícios e não valem como entregas reais.
+Os quatro casos padrão da demonstração são iluminação, remuneração,
+coleta seletiva e dengue. Os demais casos existentes permanecem disponíveis.
+
+Entrar: recupera a equipe e o progresso do banco; com um único percurso
+em andamento, abre esse caso na etapa salva. Com mais de um, mostra
+a seleção com as etapas de cada percurso. Equipes novas escolhem o desafio.
+Avatares já nomeados não precisam ser configurados novamente.
+Na demo concluída há Jogar este mesmo caso para testar o mesmo percurso.
+O roteiro antigo de 36 telas foi retirado do controle principal da demo.
+
+Verificação: build passou; os 15 exemplos concluídos abrem e reabrem;
+retomada dos quatro casos preserva etapa e rascunho no teste automatizado.
+A publicação no site ainda depende deste commit/deploy.
+Limitações da integração estão em LEIA_PRIMEIRO_JOGO_REAL.txt.

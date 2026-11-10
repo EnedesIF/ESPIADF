@@ -12,7 +12,7 @@ export async function initBackend(): Promise<Repository> {
     try {
       const { createClient } = await import('@supabase/supabase-js');
       const { RegistrationRepository } = await import('./registrationRepository');
-      repo = new RegistrationRepository(createClient(SUPABASE.url, SUPABASE.anonKey));
+      repo = new RegistrationRepository(createClient(SUPABASE.url, SUPABASE.anonKey,{global:{fetch:(input,init)=>fetch(input,{...init,signal:init?.signal??AbortSignal.timeout(20000)})}}));
     } catch (e) {
       throw new Error('Não foi possível iniciar a conexão com o banco. O cadastro real está indisponível.');
     }

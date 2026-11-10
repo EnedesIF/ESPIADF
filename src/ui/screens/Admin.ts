@@ -1,3 +1,4 @@
+import {loginStaff,createStaffAccess} from '@/services/cloudPlay';
 import {relayDashboard} from '../challenge/RelayDashboard';
 import {cityMonitor} from './CityDashboard';
 import type { App } from '../App';
@@ -18,6 +19,7 @@ export function renderAdmin(app: App) {
   const exit = () => { location.hash = ''; app.showOpening(); };
 
   const gate = () => {
+    if(backend().mode==='supabase'){const email=h('input',{type:'email',class:'input','aria-label':'E-mail GDF'}),password=h('input',{type:'password',class:'input','aria-label':'Senha pessoal GDF'}),notice=h('p',{role:'alert'}),form=h('form',{class:'panel modal',style:{margin:'8vh auto'}},h('h2',{},'Painel GDF'),h('label',{},'E-mail autorizado',email),h('label',{},'Senha pessoal',password),notice,h('button',{type:'submit',class:'btn'},'Entrar'),h('button',{type:'button',class:'btn ghost',onclick:async()=>{try{notice.textContent=await createStaffAccess(email.value,password.value)}catch(e){notice.textContent=(e as Error).message}}},'Criar acesso com e-mail autorizado'),h('button',{type:'button',onclick:exit},'Voltar'));form.onsubmit=async e=>{e.preventDefault();try{await loginStaff(email.value,password.value,'gdf');await draw()}catch(e){notice.textContent=(e as Error).message}};root.append(form);return;} 
     const pin = h('input', { type: 'password', autocomplete: 'off' });
     const err = h('div', { class: 'err' });
     const f = h('form', { class: 'panel modal', style: { margin: '10vh auto' } }, h('div', { class: 'eyebrow' }, 'ADMINISTRAÇÃO'), h('h2', {}, 'Área restrita'),

@@ -1,3 +1,6 @@
+import {DEFAULT_PILOT_CASE} from '@/data/pilotCases';
+import {teamEntry} from '@/services/teamEntry';
+import {openCloudPlay,suspendCloud} from '@/services/cloudPlay';
 import {completedDemo} from '@/services/completedDemo';
 import {completedDemoScreen} from './challenge/CompletedDemo';
 import {relayDashboard} from './challenge/RelayDashboard';
@@ -105,27 +108,26 @@ export class App {
   mount(el: HTMLElement) { clear(this.ui); this.ui.append(el); if(isDemo(this.team))this.ui.append(demoControls(this)); }
 
   setTeam(t: Team | null) {
-    this.team = t;
+    this.team = t;if(isDemo(t))suspendCloud();
     try { if (t) localStorage.setItem(CURRENT, t.id); else localStorage.removeItem(CURRENT); } catch { /* ok */ }
   }
 
   async showPilot(campaign?:CampaignId){this.leaveGame();this.background('none');if(!this.team)this.setTeam(await createDemoTeam());this.mount(challengeChoice(this,campaign))}
-  async showChallenge(routeId:string){if(this.team&&!isDemo(this.team)&&backend().mode==='supabase'){this.remotePlayUnavailable();return}if(!this.team)this.setTeam(await createDemoTeam());const requested=relayRoute(routeId);if(isDemo(this.team)&&this.team!.id!=='espia-playable-demo-'+routeId)this.setTeam(await playableDemoFor(routeId));const route=activeChallengeCase(this.team!,requested.campaign)??requested;if(!(await reserveChallenge(this.team!.id,route.campaign,isDemo(this.team)))){await this.startCity(route.campaign);return}this.activeRelayRoute=route.id;if(selectedRoute(this.team!.id,route.campaign)?.id!==route.id)selectRoute(this.team!.id,route.campaign,route.id,route.question);this.leaveGame();this.background('none');this.engine.setIllustrated(true);this.pilot=new PilotScene(this.team!,()=>void this.showPilot(route.campaign),mode=>this.showPilotReview(mode),route.id,memberId=>this.showAvatar('hub',memberId,()=>void this.showChallenge(route.id)));this.mount(this.pilot.root)}
+  async showChallenge(routeId:string){if(!this.team)this.setTeam(await createDemoTeam());const requested=relayRoute(routeId);if(isDemo(this.team)&&this.team!.id!=='espia-playable-demo-'+routeId)this.setTeam(await playableDemoFor(routeId));const route=activeChallengeCase(this.team!,requested.campaign)??requested;if(!(await reserveChallenge(this.team!.id,route.campaign,isDemo(this.team)))){await this.startCity(route.campaign);return}if(!isDemo(this.team)&&backend().mode==='supabase'){try{await openCloudPlay(this.team!,route.id)}catch(e){let d:ReturnType<typeof modal>;d=modal(h('div',{},h('h2',{},'Não foi possível abrir a partida'),h('p',{},(e as Error).message),h('button',{class:'btn',onclick:()=>d.close()},'Voltar')));return}}this.activeRelayRoute=route.id;if(selectedRoute(this.team!.id,route.campaign)?.id!==route.id)selectRoute(this.team!.id,route.campaign,route.id,route.question);this.leaveGame();this.background('none');this.engine.setIllustrated(true);this.pilot=new PilotScene(this.team!,()=>void this.showPilot(route.campaign),mode=>this.showPilotReview(mode),route.id,memberId=>this.showAvatar('hub',memberId,()=>void this.showChallenge(route.id)));this.mount(this.pilot.root)}
   showPilotReview(mode:'teacher'|'admin'){if(!this.team?.name.includes('(demo)'))return;this.leaveGame();this.background('none');this.mount(h('div',{class:'screen dash'},h('button',{class:'btn',onclick:()=>void this.showChallenge(this.activeRelayRoute)},'← Voltar ao percurso e ao revezamento'),h('h1',{},mode==='teacher'?'Professor • demonstração local':'GDF • demonstração local'),relayDashboard(mode,this.team.mentor.email)))}
-  async showCompletedDemo(routeId='park'){const team=await completedDemo(routeId);this.setTeam(team);this.leaveGame();this.background('none');this.engine.setIllustrated(true);this.mount(completedDemoScreen(this,team,routeId))}
+  async showCompletedDemo(routeId=DEFAULT_PILOT_CASE){const team=await completedDemo(routeId);this.setTeam(team);this.leaveGame();this.background('none');this.engine.setIllustrated(true);this.mount(completedDemoScreen(this,team,routeId))}
   showOpening() { storyStep(1);this.leaveGame(); this.background('night'); this.mount(renderOpening(this)); }
   showSetup() { this.leaveGame(); this.background('day'); this.mount(renderTeamSetup(this)); }
   showAvatar(after: 'hub' | 'setup' = 'hub',memberId?:string,onDone?:()=>void) {storyStep(3); this.leaveGame(); this.background('none'); this.mount(renderAvatarCreator(this, after,memberId,onDone)); }
   enterTeam() {
     if (!this.team) return this.showOpening();
-    if (!localStorage.getItem('missaodf:avatarReady:' + this.team.id)) return this.showAvatar('hub');
-    this.showHub();
+    const destination=teamEntry(this.team);
+    if(destination.screen==='avatar')return this.showAvatar('hub');
+    if(destination.screen==='case'){void this.showChallenge(destination.routeId);return;}
+    void this.showPilot();
   }
   showCentral() { storyStep(29);this.leaveGame(); this.background('none'); this.mount(renderCentral(this)); }
-  showHub() {
-    storyStep(4);this.leaveGame();
-    this.background('day'); this.mount(renderHub(this));
-  }
+  showHub() {void this.showPilot();}
   showBriefing(id: CampaignId) { this.leaveGame(); this.background('night'); this.mount(renderMissionBriefing(this, id)); }
   showDemoMentor(){this.leaveGame();this.background('none');storyStep(32);const root=h('div',{class:'screen dash demo-teacher'},h('header',{},h('div',{},h('span',{class:'eyebrow'},'VISÃO DO PROFESSOR • DEMONSTRAÇÃO'),h('h1',{},'Evidências, raciocínio e devolutivas'))),h('p',{class:'sim-badge'},'Mentoria local da equipe fictícia. O percurso concluído contém avaliações de exemplo; nas equipes jogáveis, professor e GDF validam cada entrega.'),relayDashboard('teacher',this.team?.mentor.email));this.mount(root)}
   showDemoAdmin(){this.leaveGame();this.background('none');this.mount(h('div',{class:'screen dash'},h('h1',{},'Administração • demonstração'),relayDashboard('admin')))}
@@ -133,10 +135,10 @@ export class App {
   showAdmin() { this.leaveGame(); this.background('none'); this.engine.setScene(new THREE.Scene()); this.mount(renderAdmin(this)); }
 
   showRouteChoice(id:CampaignId){this.leaveGame();this.background('none');this.mount(routeChoice(this,id))}
-  private remotePlayUnavailable(){let dialog:ReturnType<typeof modal>;dialog=modal(h('div',{},h('h2',{},'Cadastro confirmado; partida online ainda indisponível'),h('p',{},'O cadastro pode ser conferido no banco. O envio das etapas ainda não foi validado; o jogo não iniciará uma nova partida real apenas no navegador.'),h('button',{class:'btn',onclick:()=>dialog.close()},'Voltar')))}
+
 
   async startCity(id: CampaignId) {
-    if(this.team&&!isDemo(this.team)&&backend().mode==='supabase'){this.remotePlayUnavailable();return}
+    
     if (!this.team) return this.showOpening();
     if(!(await reserveChallenge(this.team.id,id,isDemo(this.team)))){audio.play('alert');let dialog:ReturnType<typeof modal>;const alternatives=getCampaigns().filter(c=>c.available&&c.id!==id&&!availability(c.id,this.team!.id).full);dialog=modal(h('div',{class:'capacity-popup'},h('span',{class:'eyebrow'},'DESAFIO LOTADO'),h('h2',{},'Escolha outro desafio'),h('p',{},'Este desafio já tem 3 equipes. Escolha outro para entrar na competição.'),...alternatives.map(c=>h('button',{class:'btn block',onclick:()=>{dialog.close();void this.startCity(c.id)}},c.title+' • '+availability(c.id,this.team!.id).remaining+' vaga(s)')),alternatives.length?null:h('p',{},'Todos os desafios atingiram o limite. Consulte o professor para organizar outra rodada.'),h('button',{class:'btn ghost',onclick:()=>dialog.close()},'Voltar à seleção')));return}
     if(!selectedRoute(this.team.id,id)){this.leaveGame();this.background('none');this.mount(routeChoice(this,id));return}

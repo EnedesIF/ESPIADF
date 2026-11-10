@@ -1,0 +1,82 @@
+ESPIA DF — PARTIDAS REAIS NO SUPABASE
+
+PUBLICAÇÃO
+O banco já recebeu as alterações desta entrega no projeto ESPIADF.
+NÃO execute os arquivos SQL novamente; eles acompanham o pacote para revisão.
+Extraia este ZIP e substitua os arquivos da pasta src NOS MESMOS CAMINHOS
+na pasta src já existente na RAIZ do repositório EnedesIF/ESPIADF.
+Não envie o ZIP ou uma pasta externa para dentro do GitHub.
+Faça o commit e aguarde o deploy de produção de espiadf-amyx terminar.
+Atualize a página com Ctrl + Shift + R, saia e entre com a equipe.
+A equipe ENEDES cadastrada não precisa ser recriada.
+
+O QUE MUDA
+- Cadastro real de 5 a 10 participantes continua confirmado no banco.
+- Inscrição e controle de até 3 equipes por desafio passam ao Supabase.
+- As quatro rotas do piloto compartilham a persistência: iluminação,
+  remuneração, lixo/coleta seletiva e dengue.
+- Progresso, posição, pistas, decisão, responsáveis, respostas e rascunhos
+  são gravados; o bastão só avança depois da confirmação do envio.
+- A passagem de bastão não exige esperar a nota do professor ou do GDF.
+- Imagens anexadas ao percurso ficam privadas, vinculadas à equipe e
+  recuperáveis após novo login. Não há links públicos de comprovantes.
+- O rodapé distingue salvo no banco de envio pendente com cópia local.
+- Repetições de um envio não criam duplicatas. Se outra sessão atualizar
+  a mesma equipe, há aviso de conflito e a cópia pendente é preservada.
+- Falhas de conexão mantêm uma fila neste dispositivo. Voltar a ficar online
+  retenta o envio; não apague os dados do navegador antes de confirmar.
+- Professor e GDF carregam as entregas autorizadas e registram avaliações
+  no banco. O professor usa conta pessoal, não a senha da equipe.
+- Questões do fórum publicadas pelo GDF, respostas coletivas e avaliações
+  usam o banco. O jogo consulta novidades a cada 10 segundos.
+
+COMO CONFERIR
+public.espia_teams: equipe. public.espia_members: participantes.
+public.espia_enrollments: inscrição, índice atual, conclusão.
+public.espia_play_states: cópia completa da partida e revisão confirmada.
+public.espia_deliveries: respostas das atividades.
+public.espia_play_images: imagens privadas em base64 e tipo de arquivo.
+public.espia_evidence: vínculo dos comprovantes às entregas.
+public.espia_reviews: avaliações do professor e GDF.
+public.espia_forum_questions / espia_forum_responses: fórum.
+Uma etapa tem duas atividades: 10 respostas correspondem às 9 etapas.
+
+ACESSOS PESSOAIS
+O professor cria seu acesso com o mesmo email informado pelas equipes,
+confirma o email recebido e entra com sua senha pessoal. A vinculação
+ocorre somente após a confirmação do endereço e autenticação.
+O acesso GDF está autorizado para lucia.coimbra@cg.df.gov.br; a titular
+precisa criar e confirmar sua conta pessoal. Isso NÃO concede acesso ao
+console Supabase, nem à administração do banco.
+O envio/recebimento real dos emails de confirmação não foi testado nesta
+entrega e depende das configurações de email/redirect do projeto.
+
+VERIFICAÇÃO REALIZADA
+Quatro percursos completos por API autenticada, com equipe fictícia de
+cinco integrantes: 40 respostas e quatro imagens no banco. Novo login
+independente recuperou as quatro partidas completas e os comprovantes.
+Reenvios idempotentes, isolamento entre equipes, fila offline e conflitos
+foram verificados. Avaliação professor -> GDF e fórum foram testados em
+transação revertida, sem publicar questões fictícias permanentes.
+As sequências e papéis das quatro rotas foram comparados com o código.
+Build e regressões automatizadas passaram. Isso não equivale a uma nova
+varredura visual completa em todos os celulares/cenários.
+
+LIMITES E PRESERVAÇÃO
+As quatro partidas antigas dos notebooks NÃO foram recuperadas/importadas.
+Não limpe os navegadores onde foram jogadas. Esta entrega preserva a equipe
+ENEDES e os dados reais existentes. Equipes técnicas são marcadas is_test
+pelo administrador e não ocupam as vagas destinadas aos alunos.
+A persistência descrita cobre o percurso principal de nove etapas e o
+fórum. Ferramentas complementares legadas fora desse percurso (por exemplo,
+Multiplicador e o fluxo separado de planos externos) não são certificadas
+como sincronizadas nesta entrega. Não as use como entrega oficial ainda.
+O ranking geral entre equipes que não compartilham mentor permanece uma
+limitação: o RLS não expõe os cadastros de outras equipes aos estudantes.
+
+SEGURANÇA
+O navegador recebe somente chave pública. Não há service_role no pacote.
+RLS protege partidas e imagens; notas exigem perfil autorizado no servidor.
+O advisor indica proteção contra senhas vazadas desabilitada (já existente):
+https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+Tabelas privadas de convites/migrações sem política pública são intencionais.
