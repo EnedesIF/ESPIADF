@@ -1,0 +1,39 @@
+ESPIA DF — Correção da Missão Multiplicador
+
+ESTADO DA ENTREGA
+Código preparado e testado. NÃO publicado. SQL de produção NÃO aplicado:
+a revisão automática exigiu aprovação explícita para a mudança de estrutura e permissões.
+O acesso de escrita ao GitHub e ao projeto Vercel também não está disponível nesta sessão.
+Base: EnedesIF/ESPIADF, commit 9724b40dcca7e7e5dba26f600993849014af3420.
+
+O QUE FOI CORRIGIDO
+- Retirada da mensagem fixa de envio que aparecia antes de enviar.
+- Confirmação somente após recibo do banco; falha mantém campos editáveis.
+- Rascunho textual preservado no dispositivo em caso de erro.
+- Fluxo online da atividade Multiplicador, imagem privada e leitura após novo login.
+- Entrega e devolutivas nos painéis existentes do professor e GDF.
+- Reenvio apenas após pedido de ajuste; tentativas idênticas não duplicam a entrega.
+- Instruções sobre público externo à equipe, conteúdo ensinado e evidência da apresentação.
+- Atividade complementar armazenada separadamente das nove etapas e dos 900 pontos.
+- Em Nosso lugar na cidade, mantém-se avaliação direta do professor; nos demais, validação GDF.
+
+IMPLANTAÇÃO PENDENTE
+Após autorização explícita, aplicar supabase/play_multiplier.sql uma única vez no projeto ESPIADF.
+Depois publicar os três arquivos src nos mesmos caminhos, na raiz de EnedesIF/ESPIADF.
+Não publicar apenas o frontend: ele depende da nova tabela e das funções da migração.
+Não enviar o ZIP como arquivo para o repositório; extrair os arquivos nos caminhos correspondentes.
+O arquivo alteracoes.patch também oferece o diff para revisão.
+Não há alteração de cadastros, partidas, notas ou evidências existentes na migração.
+A correção não recupera o texto que os alunos digitaram anteriormente, caso não esteja salvo no navegador.
+Os formulários complementares de participação distintos de Multiplicador continuam com as limitações anteriores.
+
+VERIFICAÇÃO
+- npm run build: aprovado (TypeScript e Vite).
+- node tests/learning-v02.cjs: aprovado.
+- node tests/multiplier-ui.cjs: aprovado; falha/sucesso de envio, rascunho, imagem e recarga simulados.
+- Banco PostgreSQL isolado (PGlite 0.3.14): SQL aplicado e testado; recibo, duplicação, isolamento,
+  autoria da imagem, professor/GDF, revisão, histórico e bloqueio de alterações diretas aprovados.
+  Executar tests/multiplier-database.cjs com PGLITE_TEST_MODULE apontando para @electric-sql/pglite.
+- Regressões existentes: passaram os demais testes executados; npm test parou em relay-dashboard.cjs
+  (assert state.finished), falha reproduzida no commit original sem as alterações.
+- Sem validação visual em navegador nem teste integrado no ambiente de produção.

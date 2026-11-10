@@ -1,0 +1,32 @@
+const {buildSync}=require('esbuild');
+const {webcrypto}=require('node:crypto');global.crypto=webcrypto;
+buildSync({stdin:{contents:"export * as CLOUD from './src/services/cloudPlay';export * as W from './src/services/taskValidation';export {selectRoute} from './src/services/gdfRoutes';export {participationUI,mentorPlans} from './src/ui/v02/ParticipationUI';export {GDF_ROUTES} from './src/data/gdf/routes';export * as P from './src/services/participationPlans';export {restartMobilityDemo} from './src/services/demoReset';export {backend} from './src/services/backend';export {demoStory,storyStep} from './src/services/demoJourney';export {DEMO_JOURNEY} from './src/data/demoJourney';export * as L from './src/services/learning';export * as M from './src/data/v02/missions';export * as UI from './src/ui/v02/LearningUI';export * as C from './src/data/v02/content';export {renderCentral} from './src/ui/v02/Central';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'cjs',outfile:'/tmp/missao-multiplier-ui.cjs',alias:{'@':process.cwd()+'/src'},define:{'import.meta.env':'{}'}});
+const store=new Map();global.localStorage={getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};global.window={dispatchEvent(){},addEventListener(){},removeEventListener(){},localStorage};global.setInterval=()=>1;global.location={hash:'',pathname:'/'};
+class El{constructor(tag){this.tag=tag;this.children=[];this.style={setProperty(k,v){this[k]=v}};this.attrs={};this.value='';this.listeners={};this.classList={add(){},remove(){}};}append(...v){if(v.some(x=>x==null))throw Error('Invalid DOM child');this.children.push(...v)}setAttribute(k,v){this.attrs[k]=v}addEventListener(k,v){this.listeners[k]=v}get firstChild(){return this.children[0]}removeChild(c){this.children.splice(this.children.indexOf(c),1)}querySelector(tag){return this.children.find(c=>c instanceof El&&c.tag===tag)}get textContent(){return this._text||this.children.map(x=>x instanceof El?x.textContent:String(x)).join('')}set textContent(v){this._text=v;this.children=[]}getContext(){return {fillRect(){},drawImage(){}}}toBlob(cb,type){queueMicrotask(()=>cb(new Blob(['test-compressed-image'],{type})))}click(){return this.listeners.click?.({currentTarget:this})}}
+global.Node=El;global.document={createElement:t=>new El(t),addEventListener(){},hidden:true};global.createImageBitmap=async()=>({width:2800,height:1600,close(){}});
+const images=new Map();let opened=false;
+global.indexedDB={open(){const req={};queueMicrotask(()=>{req.result={createObjectStore(){},close(){},transaction(){const tx={objectStore(){return {put(value,id){images.set(id,value);queueMicrotask(()=>tx.oncomplete?.())},delete(id){images.delete(id);queueMicrotask(()=>tx.oncomplete?.())},get(id){const r={};queueMicrotask(()=>{r.result=images.get(id);r.onsuccess?.();tx.oncomplete?.()});return r}}}};return tx}};if(!opened){opened=true;req.onupgradeneeded?.()}req.onsuccess?.()});return req}};
+const {UI,L,M,CLOUD}=require('/tmp/missao-multiplier-ui.cjs');
+const assert=require('node:assert/strict');
+const all=e=>e instanceof El?[e,...e.children.flatMap(all)]:[];
+const team={id:'cloud-team',name:'Equipe online',mentor:{email:'mentor@example.test'},members:[]};
+let server=[],fail=false,submitted=0;
+const client={from(table){const q={select(){return q},eq(){return q},insert(){return q},then(ok,bad){return Promise.resolve({data:table==='espia_learning_submissions'?server:[],error:null}).then(ok,bad)}};return q},async rpc(name,args){if(name==='espia_submit_learning'){if(fail)return {data:null,error:Error('Conexão interrompida')};submitted++;server=[{id:'server-receipt',challenge_id:'health',payload:args.p_payload,status:'teacher_pending',revision:1,history:[],submitted_at:new Date().toISOString()}];return {data:{id:'server-receipt',revision:1,status:'teacher_pending'},error:null}}return {data:[],error:null}}};
+(async()=>{
+ CLOUD.configureCloud(client);await CLOUD.hydratePlay(team);
+ const mission=M.REAL_MISSIONS.find(m=>m.id==='multiplier');
+ let backs=0;const root=UI.evidenceForm(team,'health',mission,()=>backs++);
+ assert(!root.textContent.includes('Registro enviado para análise'));
+ const nodes=all(root),areas=nodes.filter(n=>n.tag==='textarea'),inputs=nodes.filter(n=>n.tag==='input');
+ areas.forEach((f,i)=>f.value='Relato detalhado de uma apresentação para outra turma '+i);
+ inputs.find(n=>n.attrs.type==='number').value='12';
+ const file=inputs.find(n=>n.attrs.type==='file');file.files=[{type:'image/png',size:1000}];await file.onchange();
+ const checks=inputs.filter(n=>n.attrs.type==='checkbox');checks.forEach(n=>n.checked=true);
+ const send=nodes.find(n=>n.tag==='button'&&n.textContent==='Enviar para avaliação');
+ root.listeners.input();assert(store.get('espia:evidence-draft:cloud-team:health:multiplier'));fail=true;await send.click();assert(root.textContent.includes('Envio não confirmado'));assert(!root.textContent.includes('Registro recebido pelo banco'));assert.equal(L.learning().submissions.length,0);assert.equal(send.hidden,undefined);
+ fail=false;await send.click();assert(root.textContent.includes('Registro recebido pelo banco'));assert.equal(send.hidden,true);assert.equal(backs,0);assert.equal(submitted,1);
+ const saved=L.learning().submissions[0];assert(saved);assert.equal(saved.status,'pending');assert.equal(saved.id,server[0].payload.evidenceId);assert.equal(saved.people,12);
+ await CLOUD.hydratePlay(team);assert.equal(L.learning().submissions.length,1);assert.equal(L.learning().submissions[0].id,saved.id);
+ const reopened=UI.evidenceForm(team,'health',mission,()=>{});assert(reopened.textContent.includes('Em avaliação'));assert(!all(reopened).some(n=>n.tag==='button'&&n.textContent==='Enviar para avaliação'));
+ console.log('PASS: no premature success, failure stays editable, confirmed cloud receipt, image-linked record and reload hydration.');
+})().catch(e=>{console.error(e);process.exit(1)});

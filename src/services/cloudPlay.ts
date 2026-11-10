@@ -1,5 +1,6 @@
 import type {SupabaseClient} from '@supabase/supabase-js';
 import type {Team} from '@/types';
+import type {Submission} from './learning';
 import type {ParkState} from './parkChallenge';
 let sb:SupabaseClient|undefined,active:Team|undefined;
 let running:Promise<void>|undefined,timer:ReturnType<typeof setTimeout>|undefined;
@@ -30,6 +31,7 @@ async function hydrateDeliveries(team:Team){
  for(const d of data??[])remoteTaskIds.add(d.id);
  const rows=(data??[]).map(d=>({id:d.id,teamId:team.id,teamName:team.name,mentor:team.mentor.email.toLowerCase(),campaign:d.challenge_id,key:d.payload?._client?.key??taskKey(d.case_id,d.kind,d.step),title:d.payload?._client?.title??d.kind,memberId:d.member_id,memberName:team.members.find(m=>m.id===d.member_id)?.name??'',payload:d.payload?._client?.originalPayload??JSON.stringify({respostas:d.payload}),status:d.status,score:d.teacher_score??undefined,revision:d.revision,history:(d.espia_reviews??[]).map((r:any)=>({by:r.reviewer_role,actor:r.reviewer_role==='teacher'?'Professor':'GDF',at:Date.parse(r.created_at),status:r.action==='approve'?'gdf_pending':r.action==='adjust'?'student_adjust':r.action==='confirm'?'validated':'teacher_adjust',score:r.score,note:r.note,revision:r.revision})),at:Date.parse(d.submitted_at)}));
  localStorage.setItem('espia:task-validation:v1',JSON.stringify([...old.filter(t=>t.teamId!==team.id),...rows]));
+ await hydrateCloudEvidence(team);
  window.dispatchEvent(new Event('task-validation-change'));
 }
 export async function hydratePlay(team:Team){
@@ -98,7 +100,7 @@ export async function hydrateStaff(teams:Team[]){
 }
 export function reviewCloudTask(id:string,action:string,score:number|undefined,note:string):Promise<void>|undefined{
  if(!sb||!remoteTaskIds.has(id))return;
- return (async()=>{const {error}=await sb!.rpc(remoteForumIds.has(id)?'espia_review_forum':'espia_review_task',{p_id:id,p_action:action,p_score:score??null,p_note:note});if(error)throw error;for(const team of staffTeams)await hydrateDeliveries(team);await refreshCloudForum();})();
+ return (async()=>{const {error}=await sb!.rpc(remoteEvidenceIds.has(id)?'espia_review_learning':remoteForumIds.has(id)?'espia_review_forum':'espia_review_task',{p_id:id,p_action:action,p_score:score??null,p_note:note});if(error)throw error;for(const team of staffTeams)await hydrateDeliveries(team);await refreshCloudForum();})();
 }
 export async function createStaffAccess(email:string,password:string){
  if(!sb)throw Error('Conexão com o banco indisponível.');
@@ -135,3 +137,30 @@ export function answerCloudQuestion(id:string,team:Team,text:string):Promise<voi
 }
 export const isCloudContext=()=>cloudContext;
 export function moderateCloudQuestion(id:string,published:boolean):Promise<void>|undefined{if(!sb||!cloudContext)return;return (async()=>{const {error}=await sb!.rpc('espia_set_question',{p_id:id,p_published:published});if(error)throw error;await refreshCloudForum();})();}
+
+// Complementary evidence is stored independently from the nine route stages.
+const remoteEvidenceIds=new Set<string>();
+async function hydrateCloudEvidence(team:Team){
+ const {data,error}=await sb!.from('espia_learning_submissions').select('*').eq('team_id',team.id);if(error)throw error;
+ let learning:any={submissions:[],help:[],suggestions:[],notices:[],clues:[],links:{},preModerate:true};
+ try{learning={...learning,...JSON.parse(localStorage.getItem('missaodf:learning:v02')||'{}')}}catch{}
+ const submissions=(data??[]).map(d=>({id:d.payload.evidenceId,teamId:team.id,teamName:team.name,mentor:team.mentor.email.toLowerCase(),campaign:d.challenge_id,missionId:'multiplier',texts:d.payload.texts,url:d.payload.url,date:d.payload.date,people:d.payload.people,status:d.status==='validated'?'approved':d.status==='student_adjust'?'adjust':'pending',comment:(d.history??[]).filter((h:any)=>h.by!=='student').map((h:any)=>h.actor+': '+h.note).join(' | '),revision:d.revision,updatedAt:Date.parse(d.submitted_at),history:[]}));
+ learning.submissions=[...learning.submissions.filter((r:any)=>r.teamId!==team.id||r.missionId!=='multiplier'),...submissions];
+ localStorage.setItem('missaodf:learning:v02',JSON.stringify(learning));
+ let tasks:any[]=[];try{tasks=JSON.parse(localStorage.getItem('espia:task-validation:v1')||'[]')}catch{}
+ const rows=(data??[]).map(d=>{remoteTaskIds.add(d.id);remoteEvidenceIds.add(d.id);return {id:d.id,teamId:team.id,teamName:team.name,mentor:team.mentor.email.toLowerCase(),campaign:d.challenge_id,key:'evidence:multiplier',title:'Missão Multiplicador • atividade complementar',memberId:d.member_id,memberName:team.members.find(m=>m.id===d.member_id)?.name??'Entrega coletiva',payload:JSON.stringify({evidenceId:d.payload.evidenceId,respostas:d.payload.texts,fonte:d.payload.url,data:d.payload.date,participantes:d.payload.people}),status:d.status,score:d.teacher_score??undefined,revision:d.revision,history:d.history,at:Date.parse(d.submitted_at)}});
+ localStorage.setItem('espia:task-validation:v1',JSON.stringify([...tasks.filter(t=>t.teamId!==team.id||t.key!=='evidence:multiplier'),...rows]));
+}
+export async function submitCloudEvidence(team:Team,campaign:string,r:Submission,imageId:string,expected:number){
+ if(!sb||!cloudEnabled(team.id))throw Error('Entre novamente com a equipe antes de enviar.');
+ const {data,error}=await sb.rpc('espia_submit_learning',{p_team:team.id,p_challenge:campaign,p_expected:expected,p_payload:{texts:r.texts,url:r.url,date:r.date,people:r.people,evidenceId:imageId,privacy:true}});
+ if(error)throw error;
+ // The RPC response is the receipt; a failed read refresh must not turn it into a failed send.
+ if(!data?.id)throw Error('O banco não confirmou o recebimento. Tente novamente.');
+ try{await hydrateCloudEvidence(team)}catch{
+  let cache:any={submissions:[]};try{cache=JSON.parse(localStorage.getItem('missaodf:learning:v02')||'{"submissions":[]}')}catch{}
+  cache.submissions=[...(cache.submissions??[]).filter((v:any)=>!(v.teamId===team.id&&v.campaign===campaign&&v.missionId==='multiplier')),{...r,revision:data.revision,status:data.status==='validated'?'approved':data.status==='student_adjust'?'adjust':'pending'}];
+  localStorage.setItem('missaodf:learning:v02',JSON.stringify(cache));
+ }
+ return data;
+}
