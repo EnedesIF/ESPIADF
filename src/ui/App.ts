@@ -1,3 +1,4 @@
+import {teamProfile} from './screens/TeamProfile';
 import {DEFAULT_PILOT_CASE} from '@/data/pilotCases';
 import {teamEntry} from '@/services/teamEntry';
 import {openCloudPlay,suspendCloud} from '@/services/cloudPlay';
@@ -118,6 +119,7 @@ export class App {
   async showCompletedDemo(routeId=DEFAULT_PILOT_CASE){const team=await completedDemo(routeId);this.setTeam(team);this.leaveGame();this.background('none');this.engine.setIllustrated(true);this.mount(completedDemoScreen(this,team,routeId))}
   showOpening() { storyStep(1);this.leaveGame(); this.background('night'); this.mount(renderOpening(this)); }
   showSetup() { this.leaveGame(); this.background('day'); this.mount(renderTeamSetup(this)); }
+  showTeamProfile(){if(!this.team)return;this.leaveGame();this.background('none');this.mount(teamProfile(this));}
   showAvatar(after: 'hub' | 'setup' = 'hub',memberId?:string,onDone?:()=>void) {storyStep(3); this.leaveGame(); this.background('none'); this.mount(renderAvatarCreator(this, after,memberId,onDone)); }
   enterTeam() {
     if (!this.team) return this.showOpening();

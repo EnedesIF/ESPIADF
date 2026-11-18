@@ -16,6 +16,7 @@ export interface Repository {
   readonly mode: 'local' | 'supabase';
   createTeam(team: Team, password: string): Promise<Team>;
   updateTeam(team: Team): Promise<void>;
+  updateMemberContacts?(teamId:string,contacts:{id:string;email:string;phone:string}[]):Promise<void>;
   loginTeam(login: string, password: string): Promise<Team | null>;
   loginMentor(email: string, password: string): Promise<Team[]>;
   listTeams(): Promise<Team[]>;
