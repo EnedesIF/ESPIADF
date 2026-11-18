@@ -1,0 +1,8 @@
+Atualização complementar ao jogo real.
+Copie os arquivos de src para os mesmos caminhos no repositório ESPIADF e faça o commit.
+O banco já foi atualizado; não é necessário executar o SQL novamente.
+Após o deploy: Entrar > Minha equipe • dados e avatares.
+Permite editar e-mail/telefone de todos e abrir a personalização de cada avatar.
+Papéis, integrantes, notas e progresso preservados.
+Contatos devem ser salvos antes de abrir a personalização.
+Validação: compilação, testes de retomada e 10 avatares; gravação própria e bloqueio entre equipes no banco com reversão do teste.
