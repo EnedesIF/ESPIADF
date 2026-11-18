@@ -1,16 +1,8 @@
-CORREÇÃO DIRECIONADA — NOMES E ARQUIVOS PENDENTES
-
-Base conferida: commit 6baea81 do repositório EnedesIF/ESPIADF.
-
-1. Extraia este ZIP.
-2. Envie todo o conteúdo extraído para a raiz do repositório, mantendo as pastas src, tests e docs.
-3. Substitua os arquivos correspondentes e confirme Commit changes.
-4. Aguarde a Vercel concluir o novo deploy automático.
-
-Não apague os demais arquivos. Não envie apenas o ZIP fechado. Não é necessário reenviar o pacote grande anterior: os outros 85 arquivos conferidos já correspondem à atualização.
-
-O pacote contém os nove arquivos que permaneceram antigos e a correção dos nomes personalizados. Biano passa a aparecer como nome do personagem; o cadastro e os papéis continuam preservados para avaliação.
-
-A correção foi testada no navegador e pela suíte automática. Ainda não está no site publicado. A sincronização de progresso e entregas pelo Supabase continua pendente.
-
-Detalhamento: docs/VARREDURA_E_NOMES_30_OUTUBRO.md.
+Atualização complementar ao jogo real.
+Copie os arquivos de src para os mesmos caminhos no repositório ESPIADF e faça o commit.
+O banco já foi atualizado; não é necessário executar o SQL novamente.
+Após o deploy: Entrar > Minha equipe • dados e avatares.
+Permite editar e-mail/telefone de todos e abrir a personalização de cada avatar.
+Papéis, integrantes, notas e progresso preservados.
+Contatos devem ser salvos antes de abrir a personalização.
+Validação: compilação, testes de retomada e 10 avatares; gravação própria e bloqueio entre equipes no banco com reversão do teste.
